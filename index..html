@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ساعة iTaiTek IT-659</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16171a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="iTaiTek">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2316171a'/%3E%3Crect x='24' y='18' width='52' height='64' rx='10' fill='%23b9bdb0'/%3E%3Ctext x='50' y='62' font-size='30' text-anchor='middle' font-family='monospace' fill='%232b3447'%3E12%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2316171a'/%3E%3Crect x='24' y='18' width='52' height='64' rx='10' fill='%23b9bdb0'/%3E%3Ctext x='50' y='62' font-size='30' text-anchor='middle' font-family='monospace' fill='%232b3447'%3E12%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#ececef;--fg:#1c1c1e;--mut:#5b5d66;--box:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141416;--fg:#ececef;--mut:#9a9ca6;--box:#1e1f23}}
+:root[data-theme="dark"]{--bg:#141416;--fg:#ececef;--mut:#9a9ca6;--box:#1e1f23}
+html{scroll-padding-top:env(safe-area-inset-top,0px);touch-action:manipulation}
+details{margin-top:18px;font-size:14px;color:var(--mut)}
+summary{cursor:pointer;color:var(--fg);font-weight:600}
+.scene{perspective:800px}
+.case{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .2s}
+.lcd{position:relative;overflow:hidden}
+.lcd.flash::after{content:"";position:absolute;left:0;right:0;top:0;height:35%;background:linear-gradient(transparent,rgba(255,255,255,.55),transparent);animation:sweep .5s}
+@keyframes sweep{from{transform:translateY(-100%)}to{transform:translateY(300%)}}
+.cf{position:absolute;left:50%;top:50%;width:7px;height:11px;border-radius:2px;pointer-events:none;z-index:5;animation:cf .9s ease-out forwards}
+@keyframes cf{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+body[data-lcd="blue"] .lcd{background:linear-gradient(#b9d4f5,#8fb5e8)}
+body[data-lcd="green"] .lcd{background:linear-gradient(#cfe8b0,#a4cf7a)}
+body[data-lcd="amber"] .lcd{background:linear-gradient(#f2dc9a,#e0b95a)}
+body[data-lcd="pink"] .lcd{background:linear-gradient(#f6cfe0,#e9a3c4)}
+body[data-lcd="dark"] .lcd{background:linear-gradient(#10161c,#05080b)}
+body[data-ink] .s.on{fill:var(--ink)!important}
+body[data-lcd="dark"] .s.on{fill:#5cf2c8!important}
+body[data-lcd="dark"] .s{fill:rgba(92,242,200,.07)}
+body[data-lcd="dark"] .day.cur{background:#5cf2c8;color:#05080b}
+body[data-lcd="dark"] .alm{color:#5cf2c8}
+body[data-case="blue"] .case{background:#123a7a}
+body[data-case="red"] .case{background:#8a1620}
+body[data-case="gold"] .case{background:#6b5314}
+body[data-case="gold"] .ring{background:linear-gradient(135deg,#f3dc8a,#b98a22 50%,#ecd27a)}
+#tabs{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+#tabs button,.chip,.n{border:1px solid var(--mut);background:var(--box);color:var(--fg);border-radius:20px;padding:7px 12px;font:600 13.5px system-ui;cursor:pointer}
+#tabs button.on,.chip.on{background:#2b6cdf;border-color:#2b6cdf;color:#fff}
+.prow{margin:12px 0}.prow>b{display:block;font-size:13.5px;margin-bottom:6px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.sw{display:inline-block;width:12px;height:12px;border-radius:50%;margin-inline-end:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.3)}
+.lab{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.n{padding:6px 0;border-radius:8px;font-size:12px;text-align:center}
+.pan{animation:rise .25s}
+#tabs{justify-content:center;gap:10px}
+#tabs button{width:68px;height:68px;padding:0;border-radius:14px;position:relative;overflow:hidden;border:0;transition:transform .15s,box-shadow .2s}
+#tabs button.on{background:none;box-shadow:0 0 0 3px #2b6cdf;transform:translateY(-2px)}
+#tabs button:active{transform:scale(.93)}
+#tabs svg{transform:none;position:absolute;inset:0;width:100%;height:100%}
+.tl{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;font:700 11px/1.5 system-ui;text-align:center}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.cf,.pan,.lcd.flash::after{display:none;animation:none}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 system-ui,"Segoe UI",Tahoma,sans-serif}
+.wrap{max-width:440px;margin:0 auto;padding:16px 14px 32px}
+h1{font-size:19px;margin:0 0 10px;text-align:center}
+h2{font-size:16px;margin:22px 0 6px}
+.scene{direction:ltr;position:relative;width:100%;padding:52px 0;overflow:hidden;border-radius:16px;background:var(--box)}
+.arm{position:absolute;left:0;right:0;top:50%;height:60%;transform:translateY(-50%);background:linear-gradient(#cf9567,#a8693f 70%,#955a35)}
+.hand{position:absolute;right:0;top:50%;width:20%;height:78%;transform:translateY(-50%);background:linear-gradient(#d29a6b,#a8693f);border-radius:46% 0 0 46%/30% 0 0 30%}
+.hand i{position:absolute;right:0;width:55%;height:2px;background:rgba(0,0,0,.2)}
+.strap{position:absolute;left:50%;top:0;bottom:0;width:44%;transform:translateX(-50%);background:linear-gradient(90deg,#0f1012,#2a2c31 50%,#0f1012);border-radius:6px}
+.case{position:relative;width:68%;aspect-ratio:1/1.03;margin:0 auto;background:#16171a;border-radius:9%;padding:4.5%;box-shadow:0 6px 16px rgba(0,0,0,.45);box-sizing:border-box}
+.ring{height:100%;background:linear-gradient(135deg,#d8dadf,#8d9096 50%,#c9ccd1);border-radius:6%;padding:3.5%;box-sizing:border-box}
+.face{height:100%;background:#0c0d0f;border-radius:4%;display:grid;grid-template-columns:12% 1fr 12%;grid-template-rows:auto 1fr auto;color:#fff}
+.brand{grid-column:1/4;text-align:center;color:#e6c24a;font:700 11px Georgia,serif;padding:4px 0 3px}
+.foot{grid-column:1/4;display:flex;justify-content:space-around;color:#e6c24a;font:700 9px Arial,sans-serif;padding:3px 0 4px}
+.side{display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.b{background:none;border:0;color:#fff;font:700 9px Arial,sans-serif;letter-spacing:1px;writing-mode:vertical-rl;padding:10px 7px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.side.l .b{transform:rotate(180deg)}
+.b:active{color:#e6c24a}
+.lcd{background:linear-gradient(#c4c7bb,#aeb2a5);border-radius:3px;display:grid;grid-template-columns:26% 1fr;padding:5% 3%;transition:background .15s}
+.lcd.lit{background:linear-gradient(#c6f3e6,#92dccb);box-shadow:0 0 14px #7fe8d0}
+.lcd.ring{animation:fl .4s steps(2) infinite}
+@keyframes fl{50%{filter:invert(1)}}
+.days{display:flex;flex-direction:column;justify-content:space-between}
+.day{font:700 8px Arial,sans-serif;color:#fff;background:#6d7684;border-radius:2px;text-align:center;padding:1px 0;opacity:.5}
+.day.cur{background:#232a38;opacity:1}
+.main{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-left:4%}
+.row{display:flex;gap:6%;justify-content:flex-end;width:100%}
+.big svg{width:38%;height:auto}
+.small svg{width:22%;height:auto}
+.sep{height:2px;background:#d33;width:100%}
+.bot{display:flex;justify-content:space-between;align-items:flex-end;width:100%}
+.alm{font:700 8px Arial,sans-serif;color:#3b4252;cursor:pointer;display:flex;align-items:center;gap:2px;padding:5px 3px}
+svg{transform:skewX(-5deg)}
+.s{fill:rgba(35,45,65,.07)}
+.s.on{fill:#2b3447}
+.mode{text-align:center;margin-top:10px;font-size:15px}
+.hint{font-size:13.5px;color:var(--mut);margin:2px 0}
+.hint b{color:var(--fg)}
+textarea{direction:ltr;text-align:left;width:100%;box-sizing:border-box;height:230px;background:var(--box);color:var(--fg);border:1px solid var(--mut);border-radius:10px;padding:10px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;resize:vertical}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.btns button{flex:1;min-width:120px;padding:11px 8px;border-radius:10px;border:1px solid var(--mut);background:var(--box);color:var(--fg);font:600 14px inherit;cursor:pointer}
+.btns .run{background:#2b6cdf;border-color:#2b6cdf;color:#fff}
+#err{color:#d64545;font-size:13.5px;min-height:20px;margin-top:6px;direction:ltr;text-align:left}
+code{direction:ltr;unicode-bidi:embed;font-size:12.5px}
+.day{transition:background .25s,opacity .25s}
+.pop{animation:pop .2s ease-out}
+@keyframes pop{0%{transform:skewX(-5deg) translateY(-4px) scale(1.1);opacity:.5}100%{transform:skewX(-5deg)}}
+.lcd.flash{animation:fade .3s}
+@keyframes fade{0%{opacity:.2}100%{opacity:1}}
+.case.intro{animation:enter .8s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes enter{from{opacity:0;transform:translateY(16px) scale(.92)}to{opacity:1;transform:none}}
+.case.shake{animation:shake .3s infinite}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.6deg)}75%{transform:rotate(1.6deg)}}
+.b.tap{color:#e6c24a;text-shadow:0 0 8px #e6c24a}
+.snd{background:none;border:0;font-size:18px;cursor:pointer;vertical-align:middle;padding:2px 8px}
+@media (prefers-reduced-motion:reduce){.case.intro,.case.shake,.pop,.lcd.flash,.lcd.ring{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>ساعة iTaiTek IT-659 (محاكاة)</h1>
+
+<div class="scene">
+  <div class="arm"></div>
+  <div class="hand"><i style="top:30%"></i><i style="top:52%"></i><i style="top:74%"></i></div>
+  <div class="strap"></div>
+  <div class="case intro" id="case"><div class="ring"><div class="face">
+    <div class="brand">iTaiTek</div>
+    <div class="side l"><button class="b" id="bLight">LIGHT</button><button class="b" id="bMode">MODE</button></div>
+    <div class="lcd" id="lcd">
+      <div class="days" id="days"></div>
+      <div class="main">
+        <div class="row big" id="r1"></div>
+        <div class="sep"></div>
+        <div class="row big" id="r2"></div>
+        <div class="bot">
+          <div class="alm" id="alm">ALM
+            <svg id="bell" width="10" height="10" viewBox="0 0 24 24" style="transform:none"><path d="M12 2a6 6 0 0 0-6 6v5l-2 3h16l-2-3V8a6 6 0 0 0-6-6zm-2 18a2 2 0 0 0 4 0z" fill="#2b3447"/></svg>
+          </div>
+          <div class="row small" id="r3" style="width:auto"></div>
+        </div>
+      </div>
+    </div>
+    <div class="side r"><button class="b" id="bStart">START</button><button class="b" id="bReset">RESET</button></div>
+    <div class="foot"><span>WR50M</span><span>IT-659</span></div>
+  </div></div></div>
+</div>
+<div class="mode">الوضع: <b id="modeTxt"></b> <button class="snd" id="snd" aria-label="الصوت">🔊</button></div>
+<p class="hint"><b>MODE</b> تنقل بين 6 أوضاع (الوقت، المنبه، ستوب واتش، التاريخ، مؤقت، رقم الحظ). بالمؤقت: RESET يزيد دقيقة وSTART يبدأ. برقم الحظ: START يرمي، و<b>LIGHT</b> إضاءة. بالمنبه: START ساعة، RESET دقيقة، واضغط ALM للتشغيل.</p>
+
+<nav id="tabs"></nav><div id="panel"></div>
+<h2>برمج الساعة</h2>
+<p class="hint">اكتب JavaScript واضغط تشغيل. الأوامر المتاحة:</p>
+<p class="hint"><code>show(أعلى, وسط, أسفل)</code> تعرض أرقام (0 إلى 99) أو <code>null</code> لفراغ</p>
+<p class="hint"><code>setDay(0..6)</code> اليوم المضيء (0 = SU)، <code>light(true)</code> الإضاءة، <code>beep()</code> صوت، <code>play(1..98)</code> أي صوت من الـ 98 (أو "win")، <code>tone(1000, 200)</code> نغمة بتردد ومدة بالميلي ثانية</p>
+<p class="hint"><code>onButton("START", fn)</code> تغيّر وظيفة الزر (LIGHT / MODE / START / RESET)</p>
+<p class="hint"><code>every(ms, fn)</code> تكرر كل مدة، <code>stop()</code> توقف التكرار، <code>alarm(true)</code> رمز المنبه</p>
+<textarea id="code" spellcheck="false">// عداد: كل ضغطة START يزيد الرقم
+let n = 0;
+show(0, 0, 0);
+
+onButton("START", () => {
+  n++;
+  show(0, n % 100, 0);
+  play(12);
+});
+
+onButton("RESET", () => {
+  n = 0;
+  show(0, 0, 0);
+});
+
+onButton("LIGHT", () => light(true));
+setDay(4);</textarea>
+<div class="btns">
+  <button class="run" id="run">شغّل الكود</button>
+  <button id="ex">مثال: عد تنازلي</button>
+  <button id="back">رجّع الساعة العادية</button>
+</div>
+<div id="err"></div>
+<details>
+<summary>ضيف الساعة للشاشة الرئيسية</summary>
+<p><b>أندرويد (كروم):</b> اضغط النقاط الثلاث، ثم «إضافة إلى الشاشة الرئيسية» أو «تثبيت التطبيق».</p>
+<p><b>آيفون (سفاري):</b> اضغط زر المشاركة، ثم «إضافة إلى الشاشة الرئيسية».</p>
+<p>بعدها تفتح من أيقونة مثل أي تطبيق، وتحتاج إنترنت لأول فتح.</p>
+</details>
+</div>
+<script>
+const NS="http://www.w3.org/2000/svg";
+const P={a:"9,2 41,2 36,8 14,8",f:"5,4 11,10 11,41 5,46",b:"45,4 39,10 39,41 45,46",g:"9,48 14,43 36,43 41,48 36,53 14,53",e:"5,50 11,55 11,86 5,92",c:"45,50 39,55 39,86 45,92",d:"9,95 14,89 36,89 41,95"};
+const M=["abcdef","bc","abdeg","abcdg","bcfg","acdfg","acdefg","abc","abcdefg","abcdfg"];
+function dg(par,pp){const s=document.createElementNS(NS,"svg");s.setAttribute("viewBox","0 0 50 97");const o={};
+  for(const k in P){const p=document.createElementNS(NS,"polygon");p.setAttribute("points",P[k]);p.setAttribute("class","s");s.appendChild(p);o[k]=p}
+  par.appendChild(s);
+  let last;return v=>{if(v===last)return;last=v;const on=v==null?"":M[v];for(const k in o)o[k].classList.toggle("on",on.includes(k));if(pp&&booted){s.classList.remove("pop");void s.getBoundingClientRect();s.classList.add("pop")}}}
+function pair(id,pp){const el=document.getElementById(id),a=dg(el,pp),b=dg(el,pp);
+  return n=>{if(n==null){a(null);b(null)}else{a(Math.floor(n/10));b(n%10)}}}
+const top_=pair("r1",1),mid=pair("r2",1),bot=pair("r3");
+const dd=document.getElementById("days");
+["SU","MO","TU","WE","TH","FR","SA"].forEach(t=>{const d=document.createElement("div");d.className="day";d.textContent=t;dd.appendChild(d)});
+const days=[...dd.children],lcd=document.getElementById("lcd"),bell=document.getElementById("bell"),modeTxt=document.getElementById("modeTxt"),errBox=document.getElementById("err");
+let mode=0,al={h:7,m:0,on:false},sw={run:false,t0:0,el:0},ringing=false,lastRing="",lt,ac,bi;
+let custom=false,cv=[null,null,null],dayOv=null,handlers={},timers=[],booted=false,bootT=Date.now()+1100,muted=false;
+function err(e){errBox.textContent="خطأ: "+(e&&e.message?e.message:e)}
+function unlock(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(!bus)buildAudio();ac.resume()}catch(e){}}
+let bus;
+function buildAudio(){
+  const len=Math.floor(ac.sampleRate*.7),ir=ac.createBuffer(2,len,ac.sampleRate);
+  for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3)}
+  const cv=ac.createConvolver();cv.buffer=ir;
+  const wet=ac.createGain();wet.gain.value=.3;
+  const dry=ac.createGain();dry.gain.value=.85;
+  const comp=ac.createDynamicsCompressor();
+  bus=ac.createGain();
+  bus.connect(dry);dry.connect(comp);
+  bus.connect(cv);cv.connect(wet);wet.connect(comp);
+  comp.connect(ac.destination);
+}
+function voice(f,t,d,v,tm){
+  if(muted||!ac||!bus)return;
+  try{const s=ac.currentTime+(t||0);d=d||.5;v=v||.5;
+    (tm||TB[0]).p.forEach(([r,g,k])=>{
+      const o=ac.createOscillator(),a=ac.createGain();
+      o.type=(tm&&tm.w)||"sine";o.frequency.value=f*r;
+      a.gain.setValueAtTime(.0001,s);
+      a.gain.linearRampToValueAtTime(.16*v*g*cfg.vol,s+((tm&&tm.a)||.008));
+      a.gain.exponentialRampToValueAtTime(.0001,s+d*k+.05);
+      o.connect(a);a.connect(bus);o.start(s);o.stop(s+d*k+.1)})}catch(e){}
+}
+function beepOnce(){SND.up()}
+const SND={
+  click:()=>sfx("KEY"),
+  mode:()=>{},
+  up:()=>{},
+  down:()=>{},
+  win:()=>sfx("WIN"),
+  alarm:()=>sfx("ALARM")
+};
+function startBeep(){SND.alarm();bi=setInterval(SND.alarm,1600);setTimeout(stopRing,20000)}
+function stopRing(){ringing=false;clearInterval(bi)}
+const num=v=>(v==null||isNaN(v))?null:Math.floor(Math.abs(v))%100;
+function render(){
+  const n=new Date();
+  if(Date.now()<bootT){top_(88);mid(88);bot(88);days.forEach(d=>d.classList.add("cur"));modeTxt.textContent="...";return}
+  if(!booted){booted=true;flash()}
+  days.forEach((d,i)=>d.classList.toggle("cur",i===(dayOv!=null?dayOv:n.getDay())));
+  bell.style.opacity=al.on?1:.2;tick(n);
+  if(custom){top_(cv[0]);mid(cv[1]);bot(cv[2]);modeTxt.textContent="كودك";return}
+  if(mode===0){let h=n.getHours();if(!cfg.h24)h=h%12||12;top_(h);mid(n.getMinutes());bot(n.getSeconds())}
+  else if(mode===1){top_(al.h);mid(al.m);bot(null)}
+  else if(mode===2){const e=sw.run?sw.el+(Date.now()-sw.t0):sw.el;top_(Math.floor(e/60000)%100);mid(Math.floor(e/1000)%60);bot(Math.floor(e/10)%100)}
+  else if(mode===3){top_(n.getMonth()+1);mid(n.getDate());bot(n.getFullYear()%100)}
+  else if(mode===4){const r=tmLeft();top_(Math.floor(r/60)%100);mid(r%60);bot(null)}
+  else{top_(lk[0]);mid(lk[1]);bot(null)}
+  modeTxt.textContent=["الوقت","ضبط المنبه","ستوب واتش","التاريخ","مؤقت","رقم الحظ"][mode];
+  const key=n.getHours()+":"+n.getMinutes();
+  if(al.on&&n.getHours()===al.h&&n.getMinutes()===al.m&&lastRing!==key&&!ringing){ringing=true;lastRing=key;startBeep()}
+  lcd.classList.toggle("ring",ringing);caseEl.classList.toggle("shake",ringing);
+}
+function press(name,f){return()=>{unlock();sfx(name);vib();tapAnim(name);if(ringing){stopRing();render();return}
+  if(handlers[name]){try{handlers[name]()}catch(e){err(e)}}else f();render()}}
+document.getElementById("bLight").onclick=press("LIGHT",()=>{lcd.classList.add("lit");clearTimeout(lt);lt=setTimeout(()=>lcd.classList.remove("lit"),3000)});
+document.getElementById("bMode").onclick=press("MODE",()=>{mode=(mode+1)%6;flash()});
+document.getElementById("bStart").onclick=press("START",()=>{
+  if(mode===1){al.h=(al.h+1)%24;SND.up()}
+  else if(mode===2){if(sw.run){sw.el+=Date.now()-sw.t0;sw.run=false;SND.down()}else{sw.t0=Date.now();sw.run=true;SND.up()}}else if(mode===4){tmToggle()}else if(mode===5){roll()}});
+document.getElementById("bReset").onclick=press("RESET",()=>{
+  if(mode===1){al.m=(al.m+1)%60;SND.up()}
+  else if(mode===2&&!sw.run)sw.el=0;else if(mode===4){tmAdd()}else if(mode===5){roll()}});
+document.getElementById("alm").onclick=()=>{unlock();al.on=!al.on;sfx("ALM");vib();render()};
+
+const caseEl=document.getElementById("case");
+caseEl.addEventListener("animationend",e=>{if(e.animationName==="enter")caseEl.classList.remove("intro")});
+function flash(){lcd.classList.remove("flash");void lcd.offsetWidth;lcd.classList.add("flash")}
+function tapAnim(n){const el=document.getElementById("b"+n[0]+n.slice(1).toLowerCase());if(!el)return;el.classList.add("tap");setTimeout(()=>el.classList.remove("tap"),140)}
+const sndBtn=document.getElementById("snd");
+sndBtn.onclick=()=>{unlock();muted=!muted;sndBtn.textContent=muted?"🔇":"🔊";if(!muted)SND.click()};
+const DEF={vol:.8,h24:true,chime:false,vib:true,sm:"random",lcd:"classic",cs:"black",ink:"auto"};
+const cfg=Object.assign({},DEF,(()=>{try{return JSON.parse(localStorage.getItem("itk"))||{}}catch(e){return{}}})());
+const save=()=>{try{localStorage.setItem("itk",JSON.stringify(cfg))}catch(e){}};
+function applyCfg(){const d=document.body.dataset;d.lcd=cfg.lcd;d.case=cfg.cs;if(cfg.ink==="auto")delete d.ink;else{d.ink="1";document.body.style.setProperty("--ink",cfg.ink)}}
+const vib=()=>{try{if(cfg.vib&&navigator.vibrate)navigator.vibrate(12)}catch(e){}};
+/* 98 صوت: 14 جرس × 7 نغمات */
+const TB=[{p:[[1,1,1],[2.01,.3,.6],[3.02,.12,.4],[4.2,.06,.25]]},{p:[[1,1,1],[5.4,.2,.2]],w:"triangle"},{p:[[1,1,1],[4,.35,.25],[10,.1,.1]]},{p:[[1,1,1],[2.76,.5,.5],[5.4,.3,.3]]},{p:[[1,1,1],[2,.15,1]],w:"triangle",a:.03},{p:[[1,1,1],[3,.3,.3]],w:"triangle"},{p:[[1,1,1],[4,.4,.7]]},{p:[[1,1,1],[2.4,.4,.8],[5.9,.2,.4]]},{p:[[1,1,1],[2,.5,.5],[3,.3,.3]],w:"triangle"},{p:[[1,1,1],[3.5,.4,.3],[6,.2,.15]]},{p:[[1,1,1],[1.005,.8,1]],a:.05},{p:[[1,1,1],[2.3,.6,.5],[3.8,.3,.3]]},{p:[[1,1,1],[3,.5,.2],[6.5,.2,.1]]},{p:[[1,1,1],[2,.5,1],[3,.25,1]],a:.02}];
+const PT=[[0,2,4],[4,2,0],[0,4,2,6],[0,7],[0,2,4,7,9],[4],[0,5,3]],SC=[[0,2,4,7,9],[0,2,4,5,7,9,11],[0,2,3,5,7,8,10]],BASE=[523.25,587.33,659.25,783.99,880];
+function sndPlay(i,long){const t=TB[i%14],p=PT[Math.floor(i/14)%7],s=SC[i%3],r=BASE[(i*3)%5],st=long?.11:.07,L=s.length;
+  p.forEach((d,k)=>voice(r*Math.pow(2,(s[d%L]+12*Math.floor(d/L))/12),k*st,long?.8:.4,.5,t))}
+const RL=["LIGHT","MODE","START","RESET","ALM","ROLL","TIMER","ALARM","THEME","TAB","WIN","KEY"],cyc={};
+function sfx(r){const b=RL.indexOf(r)*8;if(b<0)return;
+  const j=cfg.sm==="fixed"?0:cfg.sm==="cycle"?(cyc[r]=((cyc[r]||0)+1)%4):Math.floor(Math.random()*4);
+  sndPlay((b+j*2)%98,r==="ALARM"||r==="WIN"||r==="TIMER")}
+/* مؤقت ورقم الحظ */
+let tm={t:0,run:false,end:0},lk=[0,0],rolling=false,lastH=-1;
+const tmLeft=()=>tm.run?Math.max(0,Math.ceil((tm.end-Date.now())/1000)):tm.t;
+function tmToggle(){if(tm.run){tm.t=tmLeft();tm.run=false}else if(tm.t>0){tm.end=Date.now()+tm.t*1000;tm.run=true}}
+function tmAdd(){if(!tm.run)tm.t=(tm.t+60)%6000}
+function tick(n){
+  if(tm.run&&Date.now()>=tm.end){tm.run=false;tm.t=0;sfx("TIMER");confetti(26);lcd.classList.add("lit");setTimeout(()=>lcd.classList.remove("lit"),1600)}
+  if(cfg.chime&&n.getMinutes()===0&&n.getSeconds()===0&&lastH!==n.getHours()){lastH=n.getHours();sfx("ALARM")}}
+function roll(){if(rolling)return;rolling=true;let c=0;
+  const iv=setInterval(()=>{lk[0]=lk[1];lk[1]=Math.floor(Math.random()*100);if(c%2===0)sfx("ROLL");
+    if(++c>=9){clearInterval(iv);rolling=false;if(lk[1]%11===0){sfx("WIN");confetti(30)}}},110)}
+function confetti(n){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  const sc=document.querySelector(".scene"),cols=["#f5c542","#ef5b6b","#4fd1c5","#7aa2ff","#b57bee"];
+  for(let i=0;i<n;i++){const e=document.createElement("i"),a=Math.random()*6.283,r=60+Math.random()*130;e.className="cf";
+    e.style.cssText=`--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r-30}px;--r:${Math.random()*720-360}deg;background:${cols[i%5]}`;
+    sc.appendChild(e);setTimeout(()=>e.remove(),950)}}
+const sceneEl=document.querySelector(".scene");
+sceneEl.addEventListener("pointermove",e=>{const r=sceneEl.getBoundingClientRect();caseEl.style.setProperty("--ry",((e.clientX-r.left)/r.width-.5)*14+"deg");caseEl.style.setProperty("--rx",-((e.clientY-r.top)/r.height-.5)*12+"deg")});
+sceneEl.addEventListener("pointerleave",()=>{caseEl.style.setProperty("--rx","0deg");caseEl.style.setProperty("--ry","0deg")});
+/* القوائم */
+const LCDS=[["كلاسيك","classic","#b9bdb0"],["أزرق","blue","#8fb5e8"],["أخضر","green","#a4cf7a"],["كهرماني","amber","#e0b95a"],["وردي","pink","#e9a3c4"],["ليلي","dark","#0b1116"]];
+const CASES=[["أسود","black","#16171a"],["أزرق","blue","#123a7a"],["أحمر","red","#8a1620"],["ذهبي","gold","#b98a22"]];
+const INKS=[["تلقائي","auto","#2b3447"],["كحلي","#1b2a6b","#1b2a6b"],["أحمر","#9b1c31","#9b1c31"],["بنفسجي","#5b2a86","#5b2a86"],["تيل","#0b6b63","#0b6b63"]];
+const TX={
+colors:`<svg viewBox="0 0 68 68"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5e7e"/><stop offset=".25" stop-color="#ffb347"/><stop offset=".5" stop-color="#ffe14d"/><stop offset=".72" stop-color="#5be37d"/><stop offset="1" stop-color="#4f8bff"/></linearGradient></defs><rect width="68" height="68" fill="url(#g1)"/><circle cx="18" cy="20" r="14" fill="#fff" opacity=".22"/><circle cx="48" cy="28" r="10" fill="#fff" opacity=".18"/><circle cx="30" cy="46" r="13" fill="#000" opacity=".12"/><circle cx="54" cy="52" r="6" fill="#fff" opacity=".25"/></svg>`,
+sounds:`<svg viewBox="0 0 68 68"><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2a6b"/><stop offset="1" stop-color="#8a3fd8"/></linearGradient></defs><rect width="68" height="68" fill="url(#g2)"/><g fill="none" stroke="#fff" opacity=".22"><circle cx="34" cy="30" r="10"/><circle cx="34" cy="30" r="19"/><circle cx="34" cy="30" r="28"/></g><g fill="#fff" opacity=".88"><rect x="10" y="22" width="5" height="16" rx="2.5"/><rect x="18" y="14" width="5" height="32" rx="2.5"/><rect x="26" y="8" width="5" height="44" rx="2.5"/><rect x="34" y="16" width="5" height="28" rx="2.5"/><rect x="42" y="10" width="5" height="40" rx="2.5"/><rect x="50" y="19" width="5" height="22" rx="2.5"/></g></svg>`,
+settings:`<svg viewBox="0 0 68 68"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a5566"/><stop offset="1" stop-color="#1c2129"/></linearGradient><pattern id="p3" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="1" fill="#fff" opacity=".14"/></pattern></defs><rect width="68" height="68" fill="url(#g3)"/><rect width="68" height="68" fill="url(#p3)"/><circle cx="34" cy="28" r="19" fill="none" stroke="#d5dbe5" stroke-width="8" stroke-dasharray="5.5 4.448"/><circle cx="34" cy="28" r="14" fill="#d5dbe5"/><circle cx="34" cy="28" r="6" fill="#242a33"/></svg>`,
+tools:`<svg viewBox="0 0 68 68"><defs><linearGradient id="g4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7a52f"/><stop offset="1" stop-color="#cf520e"/></linearGradient><pattern id="p4" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="10" fill="#000" opacity=".13"/></pattern></defs><rect width="68" height="68" fill="url(#g4)"/><rect width="68" height="68" fill="url(#p4)"/><g fill="#3a2a1a" opacity=".6"><circle cx="7" cy="7" r="2.5"/><circle cx="61" cy="7" r="2.5"/><circle cx="7" cy="46" r="2.5"/><circle cx="61" cy="46" r="2.5"/></g><rect x="30" y="14" width="8" height="32" rx="3" fill="#5a3a1e"/><rect x="19" y="8" width="30" height="12" rx="3" fill="#d5dbe5"/></svg>`};
+const tabsEl=document.getElementById("tabs"),panEl=document.getElementById("panel");
+let tab="";
+function chip(l,on,fn,c){const b=document.createElement("button");b.className="chip"+(on?" on":"");b.innerHTML=(c?`<span class="sw" style="background:${c}"></span>`:"")+l;b.onclick=()=>{unlock();fn();showTab(tab)};return b}
+function row(t,items){const d=document.createElement("div");d.className="prow";d.innerHTML=`<b>${t}</b>`;const w=document.createElement("div");w.className="chips";items.forEach(i=>w.appendChild(i));d.appendChild(w);return d}
+const theme=()=>{applyCfg();save();sfx("THEME")};
+function showTab(t,fresh){
+  tab=t;[...tabsEl.children].forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+  panEl.innerHTML="";panEl.className=fresh?"pan":"";if(!t)return;
+  if(t==="colors"){panEl.append(
+    row("لون الشاشة",LCDS.map(([l,v,c])=>chip(l,cfg.lcd===v,()=>{cfg.lcd=v;theme()},c))),
+    row("لون العلبة",CASES.map(([l,v,c])=>chip(l,cfg.cs===v,()=>{cfg.cs=v;theme()},c))),
+    row("لون الأرقام",INKS.map(([l,v,c])=>chip(l,cfg.ink===v,()=>{cfg.ink=v;theme()},c))))}
+  else if(t==="sounds"){
+    const vr=document.createElement("input");vr.type="range";vr.min=0;vr.max=1;vr.step=.05;vr.value=cfg.vol;vr.style.width="100%";vr.oninput=()=>{cfg.vol=+vr.value;save()};vr.onchange=()=>{unlock();sfx("KEY")};
+    const vd=document.createElement("div");vd.className="prow";vd.innerHTML="<b>مستوى الصوت</b>";vd.appendChild(vr);
+    const lab=document.createElement("div");lab.className="lab";
+    for(let i=0;i<98;i++){const b=document.createElement("button");b.className="n";b.textContent=i+1;b.onclick=()=>{unlock();sndPlay(i,true)};lab.appendChild(b)}
+    const ld=document.createElement("div");ld.className="prow";ld.innerHTML="<b>مختبر الأصوات: 98 صوت، اضغط واسمع</b>";ld.appendChild(lab);
+    panEl.append(row("كل زر له 4 أصوات، والساعة تختار منها",[["random","عشوائي"],["cycle","بالتناوب"],["fixed","ثابت"]].map(([v,l])=>chip(l,cfg.sm===v,()=>{cfg.sm=v;save()}))),vd,ld)}
+  else if(t==="settings"){panEl.append(
+    row("عرض الساعة",[chip("24 ساعة",cfg.h24,()=>{cfg.h24=true;save()}),chip("12 ساعة",!cfg.h24,()=>{cfg.h24=false;save()})]),
+    row("تنبيه كل ساعة",[chip("شغّال",cfg.chime,()=>{cfg.chime=true;save()}),chip("مطفي",!cfg.chime,()=>{cfg.chime=false;save()})]),
+    row("اهتزاز الهاتف عند الضغط",[chip("شغّال",cfg.vib,()=>{cfg.vib=true;save()}),chip("مطفي",!cfg.vib,()=>{cfg.vib=false;save()})]))}
+  else{panEl.append(row("أدوات سريعة",[
+    chip("مؤقت دقيقة",0,()=>{mode=4;tm.t=60;tm.run=false;tmToggle();flash()}),
+    chip("مؤقت 5 دقائق",0,()=>{mode=4;tm.t=300;tm.run=false;tmToggle();flash()}),
+    chip("منبه بعد 5 دقائق",0,()=>{const d=new Date(Date.now()+3e5);al.h=d.getHours();al.m=d.getMinutes();al.on=true;mode=1;sfx("ALM");flash()}),
+    chip("ارمِ رقم الحظ",0,()=>{mode=5;flash();roll()}),
+    chip("مفاجأة 🎉",0,()=>{confetti(40);sfx("WIN")}),
+    chip("رجّع الإعدادات",0,()=>{Object.assign(cfg,DEF);theme()})]))}}
+[["colors","🎨 ألوان"],["sounds","🔊 أصوات"],["settings","⚙️ إعدادات"],["tools","🧰 أدوات"]].forEach(([k,l])=>{const b=document.createElement("button");b.innerHTML=TX[k]+'<span class="tl">'+l.replace(/^\S+\s/,"")+"</span>";b.dataset.t=k;b.onclick=()=>{unlock();sfx("TAB");showTab(tab===k?"":k,true)};tabsEl.appendChild(b)});
+applyCfg();
+/* واجهة البرمجة */
+const api={
+  show:(a,b,c)=>{custom=true;cv=[num(a),num(b),num(c)];render()},
+  setDay:i=>{dayOv=(i==null)?null:((i%7)+7)%7;render()},
+  onButton:(n,f)=>{handlers[String(n).toUpperCase()]=f},
+  every:(ms,f)=>{timers.push(setInterval(()=>{try{f();render()}catch(e){err(e)}},Math.max(50,ms)))},
+  stop:()=>{timers.forEach(clearInterval);timers=[]},
+  light:on=>{lcd.classList.toggle("lit",on!==false)},
+  beep:()=>{unlock();beepOnce()},
+  play:n=>{unlock();typeof n==="number"?sndPlay(((n-1)%98+98)%98,true):(SND[n]||SND.click)()},
+  tone:(f,ms)=>{unlock();voice(f,0,(ms||300)/1000,.6)},
+  alarm:on=>{al.on=on!==false;render()}
+};
+function resetAll(){api.stop();handlers={};custom=false;dayOv=null;lcd.classList.remove("lit");errBox.textContent="";render()}
+document.getElementById("run").onclick=()=>{
+  unlock();resetAll();
+  try{new Function("show","setDay","onButton","every","stop","light","beep","alarm","play","tone",document.getElementById("code").value)
+    (api.show,api.setDay,api.onButton,api.every,api.stop,api.light,api.beep,api.alarm,api.play,api.tone);render()}
+  catch(e){err(e)}
+};
+document.getElementById("back").onclick=resetAll;
+document.getElementById("ex").onclick=()=>{
+  document.getElementById("code").value=`// عد تنازلي من 10: START يبدأ، RESET يرجّع
+let n = 10;
+show(0, n, 0);
+
+onButton("START", () => {
+  stop();
+  every(1000, () => {
+    if (n > 0) { n--; show(0, n, 0); play("click"); }
+    if (n === 0) { play("win"); light(true); stop(); }
+  });
+});
+
+onButton("RESET", () => {
+  stop();
+  n = 10;
+  light(false);
+  show(0, n, 0);
+});`};
+try{new Function("return 1")()}catch(e){err("المتصفح يمنع تشغيل الكود هنا")}
+setInterval(render,50);render();
+</script>
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("sw.js").catch(function(){})}</script>
+</body>
+</html>
