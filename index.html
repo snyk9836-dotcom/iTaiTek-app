@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>دماغ iTaiTek</title>
+<meta name="theme-color" content="#0b1d26"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/svg+xml" href="icon.svg"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"><link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<style>
+:root{--bg:#0b1d26;--pn:#12303d;--ac:#f2b84b;--tx:#eef6f8;--mu:#8fb0bb;--me:#2b6cdf}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:system-ui,"Segoe UI",Tahoma,sans-serif;color:var(--tx);background:var(--bg);
+background-image:radial-gradient(circle at 20% 10%,rgba(242,184,75,.12),transparent 40%),radial-gradient(circle at 85% 90%,rgba(43,108,223,.18),transparent 45%),repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 2px,transparent 2px 14px);
+display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--pn);border-bottom:2px solid var(--ac)}
+header b{flex:1;font-size:19px}
+button,input,textarea{font:inherit;color:inherit}
+button{background:var(--pn);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:8px 14px;cursor:pointer}
+button.p{background:var(--ac);color:#222;border:0;font-weight:700}
+input,textarea{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:10px;width:100%}
+#menu{position:fixed;inset:0 0 0 auto;width:250px;background:var(--pn);transform:translateX(105%);transition:.25s;z-index:5;padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:-6px 0 20px #0008}
+#menu.o{transform:none}
+#menu button{text-align:right;font-size:17px;padding:12px}
+#menu button.on{background:var(--ac);color:#222}
+#veil{position:fixed;inset:0;background:#0006;z-index:4}
+main{flex:1;min-height:0;display:flex;flex-direction:column}
+.v{flex:1;min-height:0;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+[hidden]{display:none!important}
+#box{gap:8px}
+.m{max-width:88%;display:flex;flex-direction:column;gap:2px}
+.m div.t{padding:10px 14px;border-radius:18px;font-size:18px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.m.u{align-self:flex-start}.m.u .t{background:var(--me)}
+.m.a{align-self:flex-end}.m.a .t{background:rgba(255,255,255,.14)}
+.m .i{display:flex;gap:6px;align-items:center;font-size:13px;opacity:.75}
+.m .i button{padding:0 6px;background:none;border:0;font-size:15px}
+#chips{display:flex;gap:6px;flex-wrap:wrap;padding:6px 12px}
+#chips button{padding:5px 11px;font-size:14px;border-radius:14px}
+#row{display:flex;gap:6px;padding:8px 12px;background:var(--pn)}
+#row input{flex:1;min-width:70px}#mediaPreview{padding:0 12px;display:flex;gap:8px;flex-wrap:wrap}#mediaPreview img{max-width:120px;max-height:120px;object-fit:contain;border:1px solid var(--ac);border-radius:10px}.m img.chat-image{display:block;max-width:min(65vw,260px);max-height:260px;object-fit:contain;border-radius:12px;margin-top:6px}
+.card{background:rgba(0,0,0,.3);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.card h3{margin:0;color:var(--ac)}
+pre{white-space:pre-wrap;margin:0;font:inherit;line-height:1.7}
+label.sw{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+small{color:var(--mu)}
+.dots{display:inline-flex;gap:6px;padding:6px 2px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--ac);animation:dp 1.2s infinite ease-in-out}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}@keyframes dp{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:scale(1.15)}}
+</style>
+</head>
+<body>
+<header><button id="mb">☰</button><b id="ttl">💬 المحادثة</b><small id="net"></small></header>
+<div id="veil" hidden></div>
+<nav id="menu"></nav>
+<main>
+<section class="v" id="v-chat" style="padding:0"><div class="v" id="box"></div><div id="chips"></div><div id="mediaPreview" aria-live="polite"></div><div id="row"><input id="inp" placeholder="اكتب رسالتك..."><button id="pickImage" type="button">صورة</button><input id="imageFile" type="file" accept="image/*" hidden><button id="mic" type="button">صوت</button><button id="stopVoice" type="button">إيقاف الصوت</button><button class="p" id="go">إرسال</button></div></section>
+<section class="v" id="v-mem" hidden><div class="card"><h3>🧠 شنو تعلم الدماغ</h3><pre id="st"></pre><button id="rf">تحديث</button></div></section>
+<section class="v" id="v-teach" hidden>
+<div class="card"><h3>✏️ علّمه جواب</h3><input id="tq" placeholder="السؤال"><input id="ta1" placeholder="الجواب"><button class="p" id="tb1">احفظ</button><small id="tm1"></small></div>
+<div class="card"><h3>📚 علّمه من نص</h3><textarea id="ta" rows="6" placeholder="الصق نص عربي او انجليزي..."></textarea><button class="p" id="tb">تعلّم النص</button><input type="file" id="fl" accept=".txt,text/plain"><small id="pr"></small></div></section>
+<section class="v" id="v-src" hidden><div class="card"><h3>🌐 مصادر الانترنت</h3><small>شغّل او اطفي كل مصدر</small><div id="sl"></div></div></section>
+<section class="v" id="v-set" hidden><div class="card"><h3>⚙️ الإعدادات</h3>
+<label class="sw">🌐 البحث بالانترنت<input type="checkbox" id="cw" style="width:auto"></label>
+<label class="sw">🔊 قراءة الجواب بالصوت<input type="checkbox" id="cs" style="width:auto"></label>
+<button id="pb"></button><button id="eb">💾 نسخة احتياطية</button><input type="file" id="ib" accept=".json,application/json"><small id="sn"></small>
+<small>الإملاء الصوتي يعمل حسب دعم المتصفح وأذونات المايكروفون. قراءة الإجابة تستخدم أصوات الجهاز. الصور تُرفق وتُعرض داخل المحادثة؛ تحليل محتواها يحتاج محرك رؤية متصل غير مضاف حالياً.</small><small>ذاكرتك محفوظة داخل متصفح جهازك فقط.</small></div></section>
+<section class="v" id="v-dict" hidden>
+<div class="card"><h3>📖 القاموس (حرف واحد الى 10 احرف) — 4000 كلمة جاهزة</h3><pre id="dc"></pre><button id="dr">تحديث العدد</button></div>
+<div class="card"><h3>📥 استيراد قاموس</h3><small>ملف txt، كلمة بكل سطر. يحتفظ بالكلمات من 1 الى 10 احرف فقط، ويشيل المكرر. يشتغل مع ملفات كبيرة (ملايين الكلمات) وياخذ شوي وقت.</small><input type="file" id="df" accept=".txt,.csv,text/plain"><button id="ds" hidden>⏹ ايقاف</button><small id="dp"></small></div>
+<div class="card"><h3>🔎 بحث بالقاموس</h3><small>؟ = حرف واحد، * = اي عدد. مثال: كت؟ ، ب*ر ، ؟؟؟</small><input id="dq" placeholder="النمط"><select id="dl" style="background:rgba(0,0,0,.35);color:inherit;border-radius:12px;padding:10px"><option value="">كل الاطوال</option></select><button class="p" id="dg">بحث</button><button id="dk">هل هي كلمة موجودة؟</button><pre id="do"></pre></div>
+<div class="card"><h3>💾 نسخة احتياطية للقاموس والمعاني</h3><small>تحفظ كل الكلمات ومعانيها بملف، وترجعها اذا غيرت الجهاز او الموقع.</small><button id="bd">⬇️ تصدير</button><input type="file" id="bi" accept=".json,application/json"><small id="bm"></small></div>
+<div class="card"><button id="dx">🗑 مسح القاموس</button></div></section>
+<section class="v" id="v-learn" hidden><div class="card"><h3>🎓 وضع التعليم</h3><small>يجيب كلمات عربية حقيقية من ويكاموس العربي وويكيبيديا العربية بشكل مستمر. قبل ما يحفظ اي كلمة <b>لازم يفهمها اول</b>: يدور على معناها (شنو هي: دولة، مدينة، شخص... ووين تقع ومعلومات عنها) وبعدين يحفظ الكلمة وياها معناها (من 1 الى 10 احرف). الكلمة اللي ما يلكى لها معنى ما تنحفظ. تكدر تسأله بالمحادثة: «معنى ايران» او «شنو هي ايران». خلي التطبيق مفتوح والشاشة شغالة. السرعة الفعلية تنزل مع الوقت لأن الكلمات تتكرر. يرفض الكلمات المشكوك بيها (تكرار حروف، اشكال مستحيلة)، وكلمات المقالات ما تنحفظ الا بعد ما يشوفها مرتين.</small>
+<select id="lsp" style="background:rgba(0,0,0,.35);color:inherit;border-radius:12px;padding:10px"><option value="4">هادي (4 كلمات/ثانية)</option><option value="10" selected>عادي (10 كلمات/ثانية)</option><option value="20">⚡ خارق (20 كلمة/ثانية)</option></select>
+<button class="p" id="lgo">▶ ابدأ التعليم</button><pre id="lst"></pre><h3>الكلمات اللي دا يحفظها هسه</h3><div id="lfd" style="font-size:19px;line-height:2;min-height:60px;word-break:break-word"></div></div></section>
+<section class="v" id="v-auto" hidden><div class="card"><h3>🤖 الوضع التلقائي</h3><small>يشتغل لوحده ويبقى يتطور: يختار مواضيع (المرتبطة بالي تعلمها، كلمات من القاموس بدون معنى، ومقالات عشوائية)، يبحث عنها ويفهمها ويحفظها بالقاموس، ويعيد المحاولة اذا فشل. خلي الصفحة مفتوحة والشاشة شغالة. اذا شغلته يرجع يشتغل لوحده كل ما تفتح الصفحة.</small>
+<button class="p" id="ago">▶ شغّل التلقائي</button><pre id="ast"></pre><button id="aer">🐞 سجل الأخطاء</button><button id="alt">☀️/🌙 الوضع</button><pre id="aet"></pre><h3>آخر شي درسه</h3><div id="alog" style="font-size:17px;line-height:2;min-height:60px;word-break:break-word"></div></div></section>
+</main>
+<script>
+/*BRAIN-START*/
+const BRAIN=(()=>{
+const AR="ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىي",EN="abcdefghijklmnopqrstuvwxyz",PU="؟?!.,،؛:;\"'()-";
+const nrm=s=>String(s).toLowerCase().replace(/[ً-ٰٟـ]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d));
+const tok=s=>nrm(s).match(/[ء-يa-z0-9]+/g)||[];
+const sents=t=>String(t).split(/[.!?؟\n\r]+/).map(s=>s.trim()).filter(s=>s.length>1);
+const ARN=[...new Set(nrm(AR))],ENL=[...EN];
+let B,V,DF,BG,TG,CO,IV,CH,CB,PC,ready=false,dirty=new Set(),st,onR=null,prof="main",WM=[],TOP={};
+const fresh=()=>({ep:[],sem:{f:{},likes:[],dislikes:[]},lex:[],qa:{},mood:0,block:{}});
+const resetLang=()=>{V={};DF={};BG={};TG={};CO={};IV={};CH={};CB={};PC={}};
+
+/* ===== العضو 1: التخزين الدائم (IndexedDB + حماية من المسح + ملفات شخصية) ===== */
+const Store=(()=>{let dbp=null;
+ const db=()=>dbp||(dbp=new Promise((res,rej)=>{if(typeof indexedDB==="undefined")return rej();const r=indexedDB.open("itkBrain",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+ const K=k=>prof+":"+k;
+ const get=async k=>{try{const d=await db();return await new Promise((res,rej)=>{const q=d.transaction("kv").objectStore("kv").get(K(k));q.onsuccess=()=>res(q.result);q.onerror=()=>rej()})}catch(e){try{return JSON.parse(localStorage.getItem("itkb_"+K(k)))}catch(x){return undefined}}};
+ const set=async(k,v)=>{try{const d=await db();await new Promise((res,rej)=>{const t=d.transaction("kv","readwrite");t.objectStore("kv").put(v,K(k));t.oncomplete=res;t.onerror=rej})}catch(e){try{localStorage.setItem("itkb_"+K(k),JSON.stringify(v))}catch(x){}}};
+ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+ return{get,set}})();
+const mark=k=>{dirty.add(k);clearTimeout(st);st=setTimeout(flush,1200)};
+const flush=async()=>{if(!ready)return;const ks=[...dirty];dirty.clear();for(const k of ks)await Store.set(k,B[k])};
+if(typeof document!=="undefined")document.addEventListener("visibilitychange",()=>{if(document.hidden)flush()});
+
+/* ===== العضو 2: قشرة اللغة (حروف، كلمات، تتابع، تجاور، تصحيح) ===== */
+const addS=(s,idx,role)=>{const w=tok(s);if(!w.length)return;const seq=["^",...w,"$"],bump=(o,k,k2)=>{const x=o[k]||(o[k]={});x[k2]=(x[k2]||0)+1};
+ w.forEach(x=>V[x]=(V[x]||0)+1);
+ if(role!=="u")new Set(w).forEach(x=>{DF[x]=(DF[x]||0)+1;(IV[x]||(IV[x]=[])).push(idx)});
+ for(let i=0;i<seq.length-1;i++){bump(BG,seq[i],seq[i+1]);if(i<seq.length-2)bump(TG,seq[i]+" "+seq[i+1],seq[i+2])}
+ w.forEach((x,i)=>{for(let j=Math.max(0,i-2);j<Math.min(w.length,i+3);j++)if(j!==i)bump(CO,x,w[j])});
+ const n=nrm(s);for(let i=0;i<n.length;i++){const c=n[i];if(/[ء-يa-z0-9]/.test(c)){CH[c]=(CH[c]||0)+1;if(i<n.length-1)bump(CB,c,n[i+1])}}};
+const ingest=(t,r)=>{if(B.lex.length>=150000)return false;B.lex.push([t,r]);addS(t,B.lex.length-1,r);return true};
+const idf=w=>Math.log(1+B.lex.length/(1+(DF[w]||0)));
+const ed1=(a,b)=>{if(a===b)return true;const la=a.length,lb=b.length;if(Math.abs(la-lb)>1)return false;let i=0;while(i<la&&i<lb&&a[i]===b[i])i++;if(la===lb)return a.slice(i+1)===b.slice(i+1);if(la>lb)return a.slice(i+1)===b.slice(i);return a.slice(i)===b.slice(i+1)};
+const fix=w=>{if(V[w]||w.length<3)return w;let b=w,bc=0;for(const k in V)if(Math.abs(k.length-w.length)<2&&V[k]>bc&&ed1(w,k)){b=k;bc=V[k]}return b};
+const find=q=>{const sc={};q.forEach(w=>{const l=IV[w];if(!l)return;const id=idf(w);(l.length>3000?l.slice(-3000):l).forEach(i=>sc[i]=(sc[i]||0)+id)});
+ let bi=-1,bs=0;for(const k in sc){const i=+k,s=sc[k]/Math.sqrt(tok(B.lex[i][0]).length+1);if(s>bs){bs=s;bi=i}}return[bi,bs]};
+const gen1=(known,qs)=>{const seq=["^"];for(let n=0;n<14;n++){const p1=seq[seq.length-1],p2=seq[seq.length-2],c=(p2!==undefined&&TG[p2+" "+p1])||BG[p1];if(!c)break;const ks=Object.keys(c);let tot=0;
+  const ws=ks.map(k=>{let w=c[k];if(qs.has(k))w*=4;known.forEach(x=>{if(CO[x]&&CO[x][k])w*=1.5});tot+=w;return w});
+  let r=Math.random()*tot,p=ks[0];for(let i=0;i<ks.length;i++){r-=ws[i];if(r<=0){p=ks[i];break}}
+  if(p==="$")break;seq.push(p)}return seq.slice(1)};
+const gen=q=>{const known=q.filter(w=>V[w]);if(Object.keys(V).length<40||!known.length)return null;const qs=new Set(known);let best=null,bs=-1;
+ for(let a=0;a<8;a++){const o=gen1(known,qs);if(o.length<3)continue;const s=o.filter(w=>qs.has(w)).length*2+Math.min(o.length,8)/8;if(s>bs){bs=s;best=o}}return best?best.join(" "):null};
+
+/* ===== العضو 3: الحواس (فهم الشكل: لغة، مشاعر، كلمات) ===== */
+const POS="فرحان|مبسوط|ممتاز|رائع|سعيد|الحمدلله".split("|"),NEG="زعلان|حزين|تعبان|ضايج|مضغوط|زهقان|متضايق|خايف|وحيد|احبطت".split("|");
+const sense=raw=>{const m=nrm(raw).replace(/[؟?!.,،؛:"«»()]/g," ").replace(/\s+/g," ").trim();let s=0;POS.forEach(w=>{if(m.includes(nrm(w)))s+=.4});NEG.forEach(w=>{if(m.includes(nrm(w)))s-=.5});
+ return{raw,m,tk:tok(raw),mood:s,lang:/[ء-ي]/.test(raw)?"ar":/[a-z]/i.test(raw)?"en":"?"}};
+
+/* ===== العضو 4: الذاكرة العاملة (آخر الكلام والموضوع الحالي) ===== */
+const wmPush=s=>{WM.push(s);if(WM.length>8)WM.shift();for(const k in TOP){TOP[k]*=.7;if(TOP[k]<.1)delete TOP[k]}s.tk.forEach(w=>{if(V[w]&&DF[w])TOP[w]=(TOP[w]||0)+idf(w)})};
+const topic=()=>Object.entries(TOP).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>x[0]);
+
+/* ===== العضو 5: ذاكرة المعلومات عنك (اسم، عمر، مدينة، احب، شغل) ===== */
+const learnFacts=(raw,m)=>{const f=B.sem.f;let x;
+ if(x=raw.match(/(?:اسمي|انا اسمي)\s+(\S+)/)){f.name=x[1];mark("sem");return"تشرفنا يا "+x[1]+" 🌹 حفظت اسمك للابد."}
+ if((x=m.match(/عمري (\d{1,3})/))||(x=m.match(/عندي (\d{1,3}) سنه/))){f.age=x[1];mark("sem");return"حفظت: عمرك "+x[1]+" سنة."}
+ if(x=m.match(/(?:اسكن|ساكن|اعيش|عايش) (?:في |ب)?([^ ]+)/)){f.city=x[1];mark("sem");return"حفظت: تسكن في "+x[1]+"."}
+ if(x=m.match(/انا من ([^ ]+)/)){f.from=x[1];mark("sem");return"حفظت: انت من "+x[1]+"."}
+ if(x=m.match(/(?:ما احب|اكره) (.+)$/)){const v=x[1];if(!B.sem.dislikes.includes(v))B.sem.dislikes.push(v);mark("sem");return"حفظت: ما تحب "+v+"."}
+ if(x=m.match(/(?:^| )احب ([^ ].*)$/)){const v=x[1];if(!B.sem.likes.includes(v))B.sem.likes.push(v);mark("sem");return"حفظت: تحب "+v+" 🙂"}
+ if(x=m.match(/(?:اشتغل|شغلي|وظيفتي) (.+)$/)){f.job=x[1];mark("sem");return"حفظت: شغلك "+x[1]+"."}
+ return null};
+const askFacts=m=>{const f=B.sem.f,S=B.sem;
+ if(/شنو اسمي|منو انا|تعرف اسمي/.test(m))return f.name?"اسمك "+f.name+" 😉":"ما اعرف اسمك بعد، كللي: اسمي ...";
+ if(/شكد عمري|كم عمري/.test(m))return f.age?"عمرك "+f.age+" سنة":"ما اعرف عمرك بعد، كللي: عمري ...";
+ if(/وين اسكن|وين ساكن|وين اعيش/.test(m))return f.city?"تسكن في "+f.city:"ما اعرف وين تسكن بعد";
+ if(/شنو احب|شنو اللي احبه/.test(m))return S.likes.length?"تحب: "+S.likes.join(" ، "):"ما كللتلي شنو تحب بعد";
+ if(/شنو شغلي|شنو وظيفتي/.test(m))return f.job?"شغلك: "+f.job:"ما اعرف شغلك بعد";
+ if(/شنو تعرف عني|شتعرف عني|حجيلي عني/.test(m)){const a=[];if(f.name)a.push("اسمك "+f.name);if(f.age)a.push("عمرك "+f.age);if(f.city)a.push("تسكن في "+f.city);if(f.from)a.push("من "+f.from);if(f.job)a.push("شغلك "+f.job);if(S.likes.length)a.push("تحب "+S.likes.join(" و"));if(S.dislikes.length)a.push("ما تحب "+S.dislikes.join(" و"));return a.length?"اعرف عنك: "+a.join("، "):"لسه ما اعرف شي عنك، عرفني بنفسك!"}
+ return null};
+
+/* ===== العضو 6: ذاكرة المحادثات (كل رسالة، ويقدر يبحث بيها) ===== */
+const ago=t=>{const d=(Date.now()-t)/6e4;return d<60?"قبل "+Math.max(1,Math.round(d))+" دقيقة":d<1440?"قبل "+Math.round(d/60)+" ساعة":"قبل "+Math.round(d/1440)+" يوم"};
+const episodic=m=>{const x=m.match(/(?:تتذكر|شنو كلت|شنو حجينا|شنو حكيت)(?: عن (.+))?$/);if(!x)return null;const U=B.ep.filter(e=>e.r==="u");
+ if(!x[1]){const l=U.slice(-3);return l.length?"اخر شي كلته:\n"+l.map(e=>"• "+e.x+" ("+ago(e.t)+")").join("\n"):"لسه ما حجينا شي كثير"}
+ const q=tok(x[1]);const sc=U.slice(-8000).map(e=>[tok(e.x).filter(w=>q.includes(w)).length,e]).filter(a=>a[0]>0).sort((a,b)=>b[0]-a[0]||b[1].t-a[1].t).slice(0,3);
+ return sc.length?"اتذكر:\n"+sc.map(a=>"• "+a[1].x+" ("+ago(a[1].t)+")").join("\n"):"ما لقيت بذاكرتي شي عن «"+x[1]+"»"};
+
+/* ===== العضو 7: العقل (يجمع اقتراحات الاعضاء ويختار الاحسن) ===== */
+const taught=s=>{if(B.qa[s.m])return{t:B.qa[s.m],o:"taught",c:.98};const mw=s.m.split(" ");let bt=null,bs=0;for(const k in B.qa){const qw=k.split(" "),c=qw.filter(w=>mw.includes(w)).length,v=c/Math.max(qw.length,mw.length);if(v>bs){bs=v;bt=k}}return bt&&bs>=.6?{t:B.qa[bt],o:"taught",c:.9}:null};
+const langSay=s=>{if(!ready)return null;let q=s.tk.map(fix),f=find(q);if(f[1]<1.2&&q.length<=2){const q2=q.concat(topic().filter(w=>!q.includes(w))),f2=find(q2);if(f2[1]>=2.5)f=f2}const[i,bs]=f;
+ if(i>=0&&bs>=1.2){const n=B.lex[i+1];if(n&&n[1]!=="u"&&nrm(n[0])!==s.m)return{t:n[0],o:"lang-memory",c:Math.min(.85,.3+bs/4)}}
+ const g=gen(q);return g?{t:g,o:"lang-gen",c:.3}:null};
+const think=(raw,skills)=>{const s=sense(raw);B.mood=Math.max(-1,Math.min(1,B.mood*.8+s.mood));mark("mood");wmPush(s);const C=[];let x;
+ if(x=learnFacts(raw,s.m))C.push({t:x,o:"semantic",c:.97});
+ if(x=askFacts(s.m))C.push({t:x,o:"semantic",c:.95});
+ if(x=episodic(s.m))C.push({t:x,o:"episodic",c:.93});
+ if(x=taught(s))C.push(x);
+ if(x=skills&&skills(raw,s))C.push(Object.assign({o:"skill"},x));
+ if(x=langSay(s))C.push(x);
+ const ok=C.filter(c=>!B.block[s.m+"|"+nrm(c.t)]).sort((a,b)=>b.c-a.c);let r=ok[0]||{t:null,o:"none",c:0};
+ if(r.o==="skill"&&B.mood<-.4&&["greet","how"].includes(r.i))r=Object.assign({},r,{t:"هلا... شكلك مضايق شوي، احجي وياي اذا تحب 🤍"});
+ return r};
+
+/* ===== العضو 8: التعلم والتغذية الراجعة ===== */
+const observe=raw=>{if(!ready)return;for(const c of raw)if(PU.includes(c))PC[c]=(PC[c]||0)+1;sents(raw).forEach(s=>ingest(s,"u"));mark("lex")};
+const teach=(q,a)=>{if(!ready)return;B.qa[nrm(q).replace(/\s+/g," ").trim()]=a;ingest(q,"t");ingest(a,"t");mark("qa");mark("lex")};
+const thumbs=(q,a,up)=>{if(!ready)return;const k=nrm(q).replace(/\s+/g," ").trim();if(up){teach(q,a)}else{B.block[k+"|"+nrm(a)]=1;mark("block")}};
+const remember=(r,x,o)=>{if(!ready)return;B.ep.push({t:Date.now(),r,x,o});if(B.ep.length>200000)B.ep.splice(0,B.ep.length-200000);mark("ep")};
+const feed=async(text,cb)=>{const S=sents(text);let n=0;for(let i=0;i<S.length;i+=1500){S.slice(i,i+1500).forEach(s=>{if(ingest(s,"f"))n++});if(cb)cb(Math.min(S.length,i+1500),S.length);await new Promise(r=>setTimeout(r,0))}mark("lex");await flush();return n};
+const stats=()=>{let pairs=0;for(const k in BG)pairs+=Object.keys(BG[k]).length;const tot=Object.values(CH).reduce((a,b)=>a+b,0),F=B.sem.f,nf=Object.keys(F).length+B.sem.likes.length+B.sem.dislikes.length;
+ return"حالة دماغي ("+prof+"):\n• قشرة اللغة: "+Object.keys(V).length+" كلمة، "+B.lex.length+" جملة، "+tot+" حرف (عربي "+ARN.filter(c=>CH[c]>0).length+"/"+ARN.length+"، انجليزي "+ENL.filter(c=>CH[c]>0).length+"/26)، "+pairs+" ارتباط\n• ذاكرة المحادثات: "+B.ep.length+" رسالة\n• ذاكرة المعلومات: "+nf+" معلومة عنك\n• اشياء علمتني اياها: "+Object.keys(B.qa).length+"\n• المزاج: "+(B.mood>.3?"مبسوط 🙂":B.mood<-.3?"قلقان عليك 🤍":"عادي")+"\nكل شي محفوظ بقاعدة بيانات بجهازك وما ينمسح."};
+
+/* ===== التشغيل والملفات الشخصية والنسخ الاحتياطي ===== */
+const SEED=`هلا وغلا بيك
+هلا بيك شلونك اليوم
+الحمدلله زين وانت شلونك
+اني زين شكرا الله يخليك
+شنو تسوي هسه
+جالس اسولف وياك واتعلم منك
+شنو تحب تحجي عنه
+احب اتعلم كلمات جديدة
+اللغة العربية لغة جميلة وغنية بالكلمات
+الكتابة تساعد على التفكير
+القراءة كل يوم تقوي الذاكرة
+الصبر مفتاح الفرج
+من جد وجد ومن زرع حصد
+العلم نور والجهل ظلام
+الوقت كالسيف ان لم تقطعه قطعك
+شنو اكلت اليوم
+اكلت تمن وقيمه وكان لذيذ
+احب الشاي مع الصباح
+الشاي العراقي لازم يكون ثقيل
+البصرة مدينة جميلة على شط العرب
+بغداد عاصمة العراق وفيها مكتبات كثيرة
+الجو اليوم حلو ومناسب للطلعة
+اذا تعبت خذ استراحة وبعدها كمل
+كل يوم اتعلم شي جديد
+المعلم يشرح الدرس والطالب يسمع ويكتب
+الكتاب خير جليس
+الصديق وقت الضيق
+شكرا على مساعدتك لي
+العفو هذا واجبي
+تصبح على خير
+وانت من اهله
+مع السلامه اشوفك قريبا
+السلام عليكم ورحمة الله
+وعليكم السلام ورحمة الله وبركاته
+كيف حالك اليوم
+بخير والحمد لله
+ما رايك نتعلم شيئا جديدا
+فكره حلوة خلنا نبدي
+the quick brown fox jumps over the lazy dog
+hello how are you today
+i am fine thank you
+learning a language takes time and practice
+good morning my friend`;
+const KEYS=["ep","sem","lex","qa","mood","block"];
+const boot=async name=>{ready=false;if(name)prof=name;try{localStorage.setItem("itkb_prof",prof);const L=JSON.parse(localStorage.getItem("itkb_profs")||"[]");if(!L.includes(prof)){L.push(prof);localStorage.setItem("itkb_profs",JSON.stringify(L))}}catch(e){}
+ resetLang();WM=[];TOP={};B=fresh();const d={};for(const k of KEYS)d[k]=await Store.get(k);
+ const lex=d.lex||[];B.ep=d.ep||[];B.sem=Object.assign(fresh().sem,d.sem||{});B.qa=d.qa||{};B.mood=d.mood||0;B.block=d.block||{};
+ if(!lex.length){SEED.split("\n").forEach(l=>ingest(l,"f"));ready=true;KEYS.forEach(mark)}
+ else{for(let i=0;i<lex.length;i+=3000){lex.slice(i,i+3000).forEach(([t,r])=>ingest(t,r));await new Promise(r=>setTimeout(r,0))}ready=true}
+ if(onR)onR()};
+try{prof=localStorage.getItem("itkb_prof")||"main"}catch(e){}
+boot();
+const exportAll=()=>JSON.stringify({v:1,prof,ep:B.ep,sem:B.sem,lex:B.lex,qa:B.qa,mood:B.mood,block:B.block});
+const importAll=async txt=>{const o=JSON.parse(txt);if(!o||!o.lex)throw new Error("ملف غير صحيح");ready=false;for(const k of KEYS)if(o[k]!==undefined)await Store.set(k,o[k]);await boot()};
+return{think,observe,teach,thumbs,remember,feed,stats,exportAll,importAll,
+ history:n=>B.ep.slice(-n),profile:()=>prof,profiles:()=>{try{return JSON.parse(localStorage.getItem("itkb_profs")||"[]")}catch(e){return[prof]}},
+ use:async n=>{await flush();await boot(n)},on:f=>{onR=f;if(ready)f()},get ok(){return ready}}
+})();
+/*BRAIN-END*/
+</script>
+<script>
+const pk=a=>a[Math.floor(Math.random()*a.length)],rn=n=>Math.floor(Math.random()*n),pad=n=>String(n).padStart(2,"0"),bur=()=>{},sfx=()=>{},wrap=null;let pend=null,lastI=null;
+const AD="٠١٢٣٤٥٦٧٨٩",nz=s=>String(s).toLowerCase().replace(/[ً-ٰٟـ]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[٠-٩]/g,d=>AD.indexOf(d)).replace(/[؟?!.,،؛:"«»()]/g," ").replace(/\s+/g," ").trim();
+const J=["واحد راح للدكتور كاله: دكتور كل ما اشرب شاي توجعني عيني. كاله الدكتور: شيل الملعقة من الكاس! 😄","المعلم: منو يكدر يكولي شنو بالجنة؟ الطالب: ماكو واجبات يا استاذ! 😂","واحد نسى اسمه، راح للمخفر كاللهم: ابلغ عن مفقود. كالولة: شنو اسمه؟ كال: هذا اللي نسيته! 🤣","واحد كال لصاحبه: اني ما اكذب ابد. كاله: حتى هالجملة؟ 😅","الطالب للمعلم: تعاقبني على شي ما سويته؟ المعلم: لا طبعاً. الطالب: زين، اني ما سويت الواجب! 😆"],
+RD=[["شي كلما اخذت منه كبر؟","الحفره"],["شي يمشي بلا رجلين ويبجي بلا عيون؟","السحاب"],["له اسنان وما يعض؟","المشط"],["شي كل ما زاد نقص؟","العمر"],["بيت ما بي ابواب ولا شبابيك؟","البيضه"]],
+PV=["الصبر مفتاح الفرج","من جدّ وجد ومن زرع حصد","القناعه كنز لا يفنى","وفي التأني السلامه وفي العجله الندامه","الجار قبل الدار والرفيق قبل الطريق","اللي ما يعرف الصقر يشويه"],
+MT=["لا تستعجل، كل شي يجي بوقته. خطوه صغيره اليوم احسن من ولا خطوه 💪","التعب مرحله مو نهايه. خذ نفس عميق وكمل","انت اقوى مما تتصور، واللي مر عليك قبل مر وعبرته.","اذا حاس بضيق كبير ومستمر، احجي وي شخص تثق بيه، ما تبقى وحدك 🤍"],
+FD=["جرب تمن وقيمه 🍛","مسگوف طازج؟ 🐟","كباب وتنور حار 🔥","دولمه، ما تخيب 😋","باجه، اذا تحب الاصاله"];
+/* عضو المهارات: الوقت، الحساب، النكت، الالغاز... */
+const I=[
+["greet","هلا|مرحبا|السلام|سلام|اهلا|هاي|صباح الخير|مساء الخير",()=>pk(["هلا وغلا! شلون اكدر اخدمك؟","هلا بيك 🌹 شكو ماكو؟","مرحبتين! تدلل"])],
+["how","شلونك|شلونج|شخبارك|شخبارج|كيفك|كيف حالك|اخبارك|شلون الحال",()=>pk(["الحمدلله تمام، وانت شلونك؟","زين وبخير، شكو ماكو وياك؟"])],
+["who","منو انت|شنو انت|من انت|شنو اسمك|منو سواك|منو صممك|منو برمجك",()=>"اني دماغ صغير تطبيق خاص بيك 📱 عندي ذاكرة تبقى للابد وبدون انترنت وبدون مفتاح. وانت شنو اسمك؟"],
+["thanks","شكرا|مشكور|يسلمو|تسلم|عاشت ايدك|ممنون",()=>pk(["العفو، هذا واجبي 🌹","تدلل!","ولا يهمك"])],
+["bye","باي|مع السلامه|وداعا|اشوفك|تصبح على خير|تصبح",()=>pk(["مع السلامه، اشوفك على خير 👋","تصبح على خير 🌙"])],
+["joke","نكته|نكت|ضحكني|فرفشني|اضحك",()=>pk(J)],
+["riddle","لغز|حزوره|فوازير",()=>{const r=pk(RD);pend={a:r[1]};return r[0]+"\n(جاوب، او كل «ما اعرف» واكللك)"}],
+["motiv","حفزني|شجعني|احبطت|زهقان|حزين|تعبان|مضغوط|ضايج|متضايق",()=>pk(MT)],
+["proverb","حكمه|امثال|مثل شعبي",()=>pk(PV)],
+["time","الساعه|شكد الساعه|كم الساعه|الوقت",()=>"الساعه هسه "+pad(new Date().getHours())+":"+pad(new Date().getMinutes())+" ⌚"],
+["date","التاريخ|شنو اليوم|اي يوم|تاريخ اليوم|اليوم شنو",()=>"اليوم "+new Date().toLocaleDateString("ar",{dateStyle:"full"})],
+["coin","عمله|صوره او كتابه|اقلب",()=>"طلعت "+pk(["صوره","كتابه"])+" 🪙"],
+["dice","نرد|زهر",()=>"طلع "+(1+rn(6))+" 🎲"],
+["rand","رقم عشوائي|اختار رقم",()=>"رقمك: "+rn(100)],
+["food","جوعان|اكل|غدا|عشا|فطور|اكله",()=>pk(FD)],
+["weather","الجو|الطقس|درجه الحراره",()=>"ما عندي انترنت اشوف الطقس، بس طل من الشباك 😄"],
+["help","شتسوي|شنو تعرف|ساعدني|مساعده|شنو تقدر|شتقدر|ماذا تفعل",()=>"عندي اعضاء: ذاكرة معلومات (اسمك وعمرك وشنو تحب)، ذاكرة محادثات (اسألني «تتذكر؟»)، قشرة لغة تتعلم من النصوص (زر 📚)، ومهارات: وقت، حساب، نكت، الغاز. وتكدر تعلمني: «تعلم: السؤال = الجواب»"],
+["stats","شكد تعلمت|شنو تعلمت|احصائيات|حاله دماغك",()=>BRAIN.stats()],
+["love","احبك|حبيبي|ذكي|شاطر|عاشت",()=>pk(["تسلم، انت الاحلى 🌹","خجلتني 😊"])],
+["insult","غبي|حمار|اكرهك|فاشل",()=>"عادي، اني اتعلم! اضغط 👎 تحت الجواب الغلط وعلمني الصح 🙂"],
+["laugh","هههه|ههه|😂|🤣",()=>"😄😄"]
+];
+const run=it=>{const r=it[2];return typeof r==="function"?r():pk(r)};
+const skills=(raw,s)=>{const m=s.m;
+ if(pend){const p=pend;if(/ما اعرف|استسلم|الجواب|جاوب/.test(m)){pend=null;return{t:"الجواب: "+p.a+" 😄",c:.99,i:"riddle"}}if(m.includes(nz(p.a))){pend=null;bur(wrap);sfx("win");return{t:"صح عليك! 🎉",c:.99,i:"riddle"}}}
+ const sq=m.match(/جذر (\d+\.?\d*)/);if(sq)return{t:"الجذر = "+ +Math.sqrt(+sq[1]).toPrecision(10),c:.99,i:"math"};
+ let e=raw.replace(/[٠-٩]/g,d=>AD.indexOf(d)).replace(/زائد|جمع/g,"+").replace(/ناقص|طرح/g,"-").replace(/ضرب|×/g,"*").replace(/قسمه|قسمة|÷|تقسيم/g,"/").replace(/(\d)\s*[xX]\s*(?=\d)/g,"$1*").replace(/[^\d.+\-*/^()\s]/g," ");
+ if(/\d\s*[+\-*/^]\s*\(?\s*\d/.test(e)&&!/\d{4}-\d{1,2}-\d{1,2}/.test(e)){try{const v=Function('"use strict";return ('+e.trim().replace(/\s+/g," ").replace(/\^/g,"**")+')')();if(isFinite(v))return{t:"الناتج = "+ +v.toPrecision(12),c:.99,i:"math"}}catch(x){}}
+ if(lastI&&/^(ثاني|غيرها|كمان|زيد|كمل|واحد ثاني|مره ثانيه)$/.test(m)){const r=I.find(x=>x[0]===lastI);if(r)return{t:run(r),c:.9,i:r[0]}}
+ let best=null,sc=0,ml=0;I.forEach(it=>{let v=0,l=0;it[1].split("|").forEach(k=>{const kk=nz(k),hit=kk.length<=3?(" "+m+" ").includes(" "+kk+" "):m.includes(kk);if(hit){v+=kk.length>3?2:1;l=Math.max(l,kk.length)}});if(v>sc){sc=v;best=it;ml=l}});
+ if(best){lastI=best[0];return{t:run(best),c:ml>=3?.9:.5,i:best[0]}}
+ return null};
+
+</script>
+<script>
+/*DICT-START: القاموس (حرف الى 10 احرف) داخل IndexedDB*/
+const DICT=(()=>{
+const nd=s=>String(s).replace(/[\u064B-\u0652\u0670\u0640]/g,"");
+const OKW=/^[\u0621-\u064A\u0671]+$/;
+const SEEDV=2;
+const SEED="ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي ء أ إ آ ؤ ئ ى ة من الى إلى عن على في مع بين حتى منذ مذ رب خلا عدا حاشا عند لدى لدن فوق تحت امام أمام خلف قبل بعد حول دون ثم أو أم بل لكن لا لم لن ما إن أن إذا إذ لو هل أي كم كيف أين متى لماذا ماذا قد سوف كل بعض غير سوى كان كانت يكون ليس هذا هذه ذلك تلك هؤلاء أولئك الذي التي الذين اللذان اللتان هو هي هم هن هما أنا نحن أنت أنتم أنتن أنتما نعم كلا ليت لعل كأن إلا اذا إنما أما أيها يا آه أف اني انت انتي احنا انتو هاذا هاي هاذي هذول هدولا هذاك هداك هديك ذاك ذيج هنا هناك هنياك شنو شكو ماكو اكو منو وين شلون ليش شكد شوكت شمدا ايش شلونك شلونج شخبارك شخبارج هسه هسع توه توني باجر البارحه اليوم دووم دايم لسه بعدين وبعدين كلش هواي شوي شوية مره مرات ابد ابدا دغري هلكد اي اكيد طبعا بلكي يمكن ممكن لازم مو ماراح راح دا جا ياريت بس اله الي الك الها النه الكم الهم عندي عندك عنده عندها عندنا عندكم عندهم مالي مالك ماله مالها مالنا مالتي مالتك مالته وياي وياك وياه وياها وياهم وياكم بيه بيك بيها بيهم عليه عليك عليها عليهم جوه فوك كدام ورا يمك يمي يمه جنب حدك حدي حده اريد تريد يريد اريدك اكدر تكدر يكدر اشوف اسوي اروح اجي اكول اكلك كال كلت كالت كالو اسمع افتهم اعرف اظن اعتقد اشتري اشرب اكل انام اكعد كاعد جاعد ساكن واكف نايم صاحي اجيب اخذ اعطي اسوه سوه شاف شفت شفنا جاب خذ اعطيني خلي خليه خلها خلص تعال روح اركض حلو زين خوش خايس مب زغير كبير طويل كصير خفيف ثكيل غالي رخيص جوعان عطشان تعبان نعسان زهكان ضايج مضوج فرحان زعلان مرتاح مشغول مريض زلمه رجال حرمه ولد بنيه بنت جهال طفل شيخ حجي حجيه خوي خويه خالو عمو خالتي عمتي جدي ستي ابو ام يابه اخو اخت عمي خالي ابني بنتي مرتي زوجي صديقي يمعود عاد يالله تدلل تفضل عيوني روحي كلبي حبيبي فدوه يسلمو شكرا عفوا ولو بيت دار شارع سوك دكان كراج مدرسه جامعه كليه شغل دوام فلوس دينار الف مليون شاي كهوه خبز لبن ماي مي حليب تمن مرك سمك مسكوف كباب دولمه باجه كليجه بصل طماطه خيار ركي جدر استكان ابريق صينيه سجاده جنطه سكينه ملعكه جنكال كاس صحن طاوله كرسي باب شباك موبايل تلفون نت كهربا مولده سيارة سياره بسكليت قطار طيارة كلبه جلب قطو بزون حمار حصان خروف دجاجه ديج جريدة جريده كتاب دفتر كلم كلمه قلم شمس كمر نجمه مطر ثلج حر برد هوا غيمه عراك زحمه ورطه مشكله هوسه خبصه كذب يكذب يخبل خبل مخبل جاهل زاحف خرط عمه خاله غرفة غرفه مطبخ حمام سقف جدار ارض سطح حديقة حديقه زقاق محلة محله مدينة مدينه قرية قريه بلد وطن نهر بحر جبل صحراء نخلة نخله شجرة شجره وردة ورده زهرة زهره تمر لحم رز جبن بيض عسل سكر ملح زيت ماء قهوة قهوه عصير فاكهة فاكهه تفاحة تفاحه موزة موزه برتقالة برتقاله رمان عنب تين بطيخ طماطم ثوم بطاطا جزر اب اخ ابن جد جدة جده عم عمة خال خالة زوج زوجة زوجه صديق صديقة صديقه جار جارة جاره معلم معلمة معلمه طالب طالبة طالبه طبيب مهندس سائق عامل تاجر شرطي جندي رجل شاب ضيف عدو قائد ملك امير شاعر كاتب فنان ورقة ورقه مدرسة جامعة صف سبورة سبوره حقيبة حقيبه طاولة سرير دراجة دراجه طائرة طائره سفينة سفينه حافلة حافله طريق جسر ساعة ساعه هاتف شاشة شاشه مفتاح قفل سكين ملعقة ملعقه كوب كأس قدر مصباح مرآة مرآه سجادة وسادة وساده بطانية بطانيه ثوب قميص بنطلون حذاء قبعة قبعه خاتم عقد عمل علم فكرة فكره امل حلم حب حرب سلام قوة قوه صبر عقل قلب نفس جسم وجه عين اذن انف فم يد رأس شعر سن لسان كف اصبع ظهر بطن صدر كتف يوم ليلة ليله صباح مساء سنة سنه شهر اسبوع وقت زمن فصل شتاء صيف ربيع خريف قمر نجمة سماء غيمة ريح نار تراب حجر رمل موجة موجه اسد نمر ذئب ثعلب فيل جمل بقرة بقره غنم كلب قطة قطه فأر ارنب طير عصفور حمامة حمامه صقر نسر سمكة سمكه حية حيه عقرب نحلة نحله ذبابة ذبابه حق خير شر سر خبر قصة قصه لغة لغه كلمة حرف جملة جمله معنى سؤال جواب مشكلة حل رسالة رساله صورة صوره صوت لون شكل رقم عدد مال ثمن سوق بنك شركة شركه دشداشة دشداشه عباية عبايه يشماغ مخدة مخده شرشف سفرة سفره تخت ثلاجة ثلاجه مروحة مروحه مبردة مبرده مولدة تكسي ستوتة ستوته طباخ سماور قوري طاسة طاسه صينية تشريب كبة كبه شوربة شوربه دجاج دجاجة فروج صمون طرشي بامية باميه عدس حمص قيمر دبس دولمة باجة كليجة مرق جنطة كاشوكة كاشوكه مرتبة مرتبه شقة شقه محل كهوة ابيض اسود احمر ازرق اخضر اصفر بنفسجي رمادي كتب كتبت كتبنا كتبوا كتبه كتبها درس درست درسنا درسوا درسه درسها فتح فتحت فتحنا فتحوا فتحه فتحها شرب شربت شربنا شربوا شربه شربها جلس جلست جلسنا جلسوا جلسه جلسها ركب ركبت ركبنا ركبوا ركبه ركبها سمع سمعت سمعنا سمعوا سمعه سمعها فهم فهمت فهمنا فهموا فهمه فهمها علمت علمنا علموا علمه علمها عملت عملنا عملوا عمله عملها حمل حملت حملنا حملوا حمله حملها نزل نزلت نزلنا نزلوا نزله نزلها طلب طلبت طلبنا طلبوا طلبه طلبها ضرب ضربت ضربنا ضربوا ضربه ضربها لعب لعبت لعبنا لعبوا لعبه لعبها سكن سكنت سكننا سكنوا سكنه سكنها دفع دفعت دفعنا دفعوا دفعه دفعها رفع رفعت رفعنا رفعوا رفعه رفعها قطع قطعت قطعنا قطعوا قطعه قطعها كسر كسرت كسرنا كسروا كسره كسرها غسل غسلت غسلنا غسلوا غسله غسلها نظر نظرت نظرنا نظروا نظره نظرها ذكر ذكرت ذكرنا ذكروا ذكره ذكرها شكر شكرت شكرنا شكروا شكره شكرها حفظ حفظت حفظنا حفظوا حفظه حفظها خرج خرجت خرجنا خرجوا خرجه خرجها دخل دخلت دخلنا دخلوا دخله دخلها سرق سرقت سرقنا سرقوا سرقه سرقها سبح سبحت سبحنا سبحوا سبحه سبحها سمح سمحت سمحنا سمحوا سمحه سمحها طبخ طبخت طبخنا طبخوا طبخه طبخها عرف عرفت عرفنا عرفوا عرفه عرفها فرح فرحت فرحنا فرحوا فرحه فرحها حزن حزنت حزننا حزنوا حزنه حزنها ملكت ملكنا ملكوا ملكه ملكها منع منعت منعنا منعوا منعه منعها نجح نجحت نجحنا نجحوا نجحه نجحها هرب هربت هربنا هربوا هربه هربها ركض ركضت ركضنا ركضوا ركضه ركضها رسم رسمت رسمنا رسموا رسمه رسمها زرع زرعت زرعنا زرعوا زرعه زرعها صنع صنعت صنعنا صنعوا صنعه صنعها ضحك ضحكت ضحكنا ضحكوا ضحكه ضحكها نشر نشرت نشرنا نشروا نشره نشرها جمع جمعت جمعنا جمعوا جمعه جمعها حفر حفرت حفرنا حفروا حفره حفرها خلق خلقت خلقنا خلقوا خلقه خلقها ربح ربحت ربحنا ربحوا ربحه ربحها خسر خسرت خسرنا خسروا خسره خسرها سحب سحبت سحبنا سحبوا سحبه سحبها شعرت شعرنا شعروا شعره شعرها صرخ صرخت صرخنا صرخوا صرخه صرخها عبر عبرت عبرنا عبروا عبره عبرها غلب غلبت غلبنا غلبوا غلبه غلبها قرب قربت قربنا قربوا قربه قربها كذبت كذبنا كذبوا كذبه كذبها لبس لبست لبسنا لبسوا لبسه لبسها مسح مسحت مسحنا مسحوا مسحه مسحها نقل نقلت نقلنا نقلوا نقله نقلها هدم هدمت هدمنا هدموا هدمه هدمها بحث بحثت بحثنا بحثوا بحثه بحثها تعب تعبت تعبنا تعبوا تعبه تعبها جرب جربت جربنا جربوا جربه جربها حكم حكمت حكمنا حكموا حكمه حكمها حلمت حلمنا حلموا حلمه حلمها خدم خدمت خدمنا خدموا خدمه خدمها ذبح ذبحت ذبحنا ذبحوا ذبحه ذبحها رجع رجعت رجعنا رجعوا رجعه رجعها سقط سقطت سقطنا سقطوا سقطه سقطها سكت سكتت سكتنا سكتوا سكته سكتها شرح شرحت شرحنا شرحوا شرحه شرحها صعد صعدت صعدنا صعدوا صعده صعدها طرق طرقت طرقنا طرقوا طرقه طرقها فكر فكرت فكرنا فكروا فكرها قفز قفزت قفزنا قفزوا قفزه قفزها كشف كشفت كشفنا كشفوا كشفه كشفها لمس لمست لمسنا لمسوا لمسه لمسها نفع نفعت نفعنا نفعوا نفعه نفعها الكبير كبيرة الكبيرة صغير الصغير صغيرة الصغيرة الطويل طويلة الطويلة قصير القصير قصيرة القصيرة جميل الجميل جميلة الجميلة قبيح القبيح قبيحة القبيحة سريع السريع سريعة السريعة بطيء البطيء بطيءة البطيءة قوي القوي قوية القوية ضعيف الضعيف ضعيفة الضعيفة غني الغني غنية الغنية فقير الفقير فقيرة الفقيرة سعيد السعيد سعيدة السعيدة حزين الحزين حزينة الحزينة جديد الجديد جديدة الجديدة قديم القديم قديمة القديمة نظيف النظيف نظيفة النظيفة وسخ الوسخ وسخة الوسخة ثقيل الثقيل ثقيلة الثقيلة الخفيف خفيفة الخفيفة بارد البارد باردة الباردة حار الحار حارة الحارة الحلو حلوة الحلوة مر المر مرة المرة ساخن الساخن ساخنة الساخنة رطب الرطب رطبة الرطبة جاف الجاف جافة الجافة واسع الواسع واسعة الواسعة ضيق الضيق ضيقة الضيقة عالي العالي عالية العالية قريب القريب قريبة القريبة بعيد البعيد بعيدة البعيدة سهل السهل سهلة السهلة صعب الصعب صعبة الصعبة مهم المهم مهمة المهمة خطير الخطير خطيرة الخطيرة هادئ الهادئ هادئة الهادئة ذكي الذكي ذكية الذكية غبي الغبي غبية الغبية شجاع الشجاع شجاعة الشجاعة جبان الجبان جبانة الجبانة كريم الكريم كريمة الكريمة بخيل البخيل بخيلة البخيلة صادق الصادق صادقة الصادقة كاذب الكاذب كاذبة الكاذبة المريض مريضة المريضة سليم السليم سليمة السليمة عظيم العظيم عظيمة العظيمة الرخيص رخيصة الرخيصة الغالي غالية الغالية البيت الدار الغرفة الغرفه المطبخ الحمام الباب الشباك السقف الجدار الارض السطح الحديقة الحديقه الشارع الزقاق المحلة المحله المدينة المدينه القرية القريه البلد الوطن النهر البحر الجبل الصحراء النخلة النخله الشجرة الشجره الوردة الورده الزهرة الزهره التمر الخبز اللحم السمك الرز الحليب الجبن البيض العسل السكر الملح الزيت الماء القهوة القهوه العصير الفاكهة الفاكهه التفاحة التفاحه الموزة الموزه البرتقالة البرتقاله الرمان العنب التين البطيخ الخيار الطماطم البصل الثوم البطاطا الجزر الاب الام الاخ الاخت الابن البنت الجد الجدة الجده العم العمة العمه الخال الخالة الخاله الزوج الزوجة الزوجه الصديق الصديقة الصديقه الجار الجارة الجاره المعلم المعلمة المعلمه الطالب الطالبة الطالبه الطبيب المهندس السائق العامل التاجر الشرطي الجندي الرجل الولد الطفل الشاب الشيخ الضيف العدو القائد الملك الامير الشاعر الكاتب الفنان الكتاب القلم الدفتر الورقة الورقه المدرسة المدرسه الجامعة الجامعه الصف السبورة السبوره الحقيبة الحقيبه الكرسي الطاولة الطاوله السرير السيارة السياره الدراجة الدراجه القطار الطائرة الطائره السفينة السفينه الحافلة الحافله الطريق الجسر الساعة الساعه الهاتف الشاشة الشاشه المفتاح القفل السكين الملعقة الملعقه الصحن الكوب الكأس الابريق القدر المصباح المرآة المرآه السجادة السجاده الوسادة الوساده البطانية البطانيه الثوب القميص البنطلون الحذاء القبعة القبعه الخاتم العقد العمل العلم الفكرة الفكره الامل الحلم الحب الحرب السلام القوة القوه الصبر العقل القلب الروح النفس الجسم الوجه العين الاذن الانف الفم اليد الرأس الشعر السن اللسان الكف الاصبع الظهر البطن الصدر الكتف الليلة الليله الصباح المساء السنة السنه الشهر الاسبوع الوقت الزمن الفصل الشتاء الصيف الربيع الخريف الشمس القمر النجمة النجمه السماء الغيمة الغيمه المطر الريح النار التراب الحجر الرمل الموجة الموجه الاسد النمر الذئب الثعلب الفيل الجمل الحصان الحمار البقرة البقره الغنم الكلب القطة القطه الفأر الارنب الطير العصفور الحمامة الحمامه الصقر النسر السمكة السمكه الحية الحيه العقرب النحلة النحله الذبابة الذبابه الحق الخير الشر السر الخبر القصة القصه اللغة اللغه الكلمة الكلمه الحرف الجملة الجمله المعنى السؤال الجواب المشكلة المشكله الحل الرسالة الرساله الصورة الصوره الصوت اللون الشكل الرقم العدد المال الثمن السوق الدكان البنك الشركة الشركه الدشداشة الدشداشه العباية العبايه اليشماغ المخدة المخده الشرشف السفرة السفره التخت الثلاجة الثلاجه المروحة المروحه المبردة المبرده المولدة المولده التكسي الكراج الستوتة الستوته الطباخ السماور القوري الجدر الطاسة الطاسه الصينية الصينيه التشريب الكبة الكبه الشوربة الشوربه الدجاج الدجاجة الدجاجه الفروج الصمون الطرشي البامية الباميه العدس الحمص القيمر الدبس الثلج الاستكان المسكوف الكباب الدولمة الدولمه الباجة الباجه الكليجة الكليجه التمن المرق الجنطة الجنطه الكاشوكة الكاشوكه المرتبة المرتبه الشقة الشقه المحل الكهوة الكهوه الابيض الاسود الاحمر الازرق الاخضر الاصفر البنفسجي الرمادي يكتب اكتب تكتب نكتب يكتبون تكتبون يكتبه يكتبها يدرس ادرس تدرس ندرس يدرسون تدرسون يدرسه يدرسها يفتح افتح تفتح نفتح يفتحون تفتحون يفتحه يفتحها يشرب تشرب نشرب يشربون تشربون يشربه يشربها يجلس اجلس تجلس نجلس يجلسون تجلسون يجلسه يجلسها يركب اركب تركب نركب يركبون تركبون يركبه يركبها يسمع تسمع نسمع يسمعون تسمعون يسمعه يسمعها يفهم افهم تفهم نفهم يفهمون تفهمون يفهمه يفهمها يعلم اعلم تعلم نعلم يعلمون تعلمون يعلمه يعلمها يعمل اعمل تعمل نعمل يعملون تعملون يعمله يعملها يحمل احمل تحمل نحمل يحملون تحملون يحمله يحملها ينزل انزل تنزل ننزل ينزلون تنزلون ينزله ينزلها يطلب اطلب تطلب نطلب يطلبون تطلبون يطلبه يطلبها يضرب اضرب تضرب نضرب يضربون تضربون يضربه يضربها يلعب العب تلعب نلعب يلعبون تلعبون يلعبه يلعبها يسكن اسكن تسكن نسكن يسكنون تسكنون يسكنه يسكنها يدفع ادفع تدفع ندفع يدفعون تدفعون يدفعه يدفعها يرفع ارفع ترفع نرفع يرفعون ترفعون يرفعه يرفعها يقطع اقطع تقطع نقطع يقطعون تقطعون يقطعه يقطعها يكسر اكسر تكسر نكسر يكسرون تكسرون يكسره يكسرها يغسل اغسل تغسل نغسل يغسلون تغسلون يغسله يغسلها ينظر انظر تنظر ننظر ينظرون تنظرون ينظره ينظرها يذكر اذكر تذكر نذكر يذكرون تذكرون يذكره يذكرها يشكر اشكر تشكر نشكر يشكرون تشكرون يشكره يشكرها يحفظ احفظ تحفظ نحفظ يحفظون تحفظون يحفظه يحفظها يخرج اخرج تخرج نخرج يخرجون تخرجون يخرجه يخرجها يدخل ادخل تدخل ندخل يدخلون تدخلون يدخله يدخلها يسرق اسرق تسرق نسرق يسرقون تسرقون يسرقه يسرقها يسبح اسبح تسبح نسبح يسبحون تسبحون يسبحه يسبحها يسمح اسمح تسمح نسمح يسمحون تسمحون يسمحه يسمحها يطبخ اطبخ تطبخ نطبخ يطبخون تطبخون يطبخه يطبخها يعرف تعرف نعرف يعرفون تعرفون يعرفه يعرفها يفرح افرح تفرح نفرح يفرحون تفرحون يفرحه يفرحها يحزن احزن تحزن نحزن يحزنون تحزنون يحزنه يحزنها يملك املك تملك نملك يملكون تملكون يملكه يملكها يمنع امنع تمنع نمنع يمنعون تمنعون يمنعه يمنعها ينجح انجح تنجح ننجح ينجحون تنجحون ينجحه ينجحها يهرب اهرب تهرب نهرب يهربون تهربون يهربه يهربها يركض تركض نركض يركضون تركضون يركضه يركضها يرسم ارسم ترسم نرسم يرسمون ترسمون يرسمه يرسمها يزرع ازرع تزرع نزرع يزرعون تزرعون يزرعه يزرعها يصنع اصنع تصنع نصنع يصنعون تصنعون يصنعه يصنعها يضحك اضحك تضحك نضحك يضحكون تضحكون يضحكه يضحكها ينشر انشر تنشر ننشر ينشرون تنشرون ينشره ينشرها يجمع اجمع تجمع نجمع يجمعون تجمعون يجمعه يجمعها يحفر احفر تحفر نحفر يحفرون تحفرون يحفره يحفرها يخلق اخلق تخلق نخلق يخلقون تخلقون يخلقه يخلقها يربح اربح تربح نربح يربحون تربحون يربحه يربحها يخسر اخسر تخسر نخسر يخسرون تخسرون يخسره يخسرها يسحب اسحب تسحب نسحب يسحبون تسحبون يسحبه يسحبها يشعر اشعر تشعر نشعر يشعرون تشعرون يشعره يشعرها يصرخ اصرخ تصرخ نصرخ يصرخون تصرخون يصرخه يصرخها يعبر اعبر تعبر نعبر يعبرون تعبرون يعبره يعبرها يغلب اغلب تغلب نغلب يغلبون تغلبون يغلبه يغلبها يقرب اقرب تقرب نقرب يقربون تقربون يقربه يقربها اكذب تكذب نكذب يكذبون تكذبون يكذبه يكذبها يلبس البس تلبس نلبس يلبسون تلبسون يلبسه يلبسها يمسح امسح تمسح نمسح يمسحون تمسحون يمسحه يمسحها ينقل انقل تنقل ننقل ينقلون تنقلون ينقله ينقلها يهدم اهدم تهدم نهدم يهدمون تهدمون يهدمه يهدمها يبحث ابحث تبحث نبحث يبحثون تبحثون يبحثه يبحثها يتعب اتعب تتعب نتعب يتعبون تتعبون يتعبه يتعبها يجرب اجرب تجرب نجرب يجربون تجربون يجربه يجربها يحكم احكم تحكم نحكم يحكمون تحكمون يحكمه يحكمها يحلم احلم تحلم نحلم يحلمون تحلمون يحلمه يحلمها يخدم اخدم تخدم نخدم يخدمون تخدمون يخدمه يخدمها يذبح اذبح تذبح نذبح يذبحون تذبحون يذبحه يذبحها يرجع ارجع ترجع نرجع يرجعون ترجعون يرجعه يرجعها يسقط اسقط تسقط نسقط يسقطون تسقطون يسقطه يسقطها يسكت اسكت تسكت نسكت يسكتون تسكتون يسكته يسكتها يشرح اشرح تشرح نشرح يشرحون تشرحون يشرحه يشرحها يصعد اصعد تصعد نصعد يصعدون تصعدون يصعده يصعدها يطرق اطرق تطرق نطرق يطرقون تطرقون يطرقه يطرقها يفكر افكر تفكر نفكر يفكرون تفكرون يفكره يفكرها يقفز اقفز تقفز نقفز يقفزون تقفزون يقفزه يقفزها يكشف اكشف تكشف نكشف يكشفون تكشفون يكشفه يكشفها يلمس المس تلمس نلمس يلمسون تلمسون يلمسه يلمسها ينفع انفع تنفع ننفع ينفعون تنفعون ينفعه ينفعها بيتي داري غرفتي مطبخي حمامي بابي شباكي سقفي جداري ارضي سطحي حديقتي شارعي زقاقي محلتي مدينتي قريتي بلدي وطني نهري بحري جبلي صحراءي نخلتي شجرتي وردتي زهرتي تمري خبزي لحمي سمكي رزي حليبي جبني بيضي عسلي سكري ملحي زيتي ماءي قهوتي عصيري فاكهتي تفاحتي موزتي برتقالتي رماني عنبي تيني بطيخي خياري طماطمي بصلي ثومي جزري ابي امي اخي اختي جدتي زوجتي صديقتي جاري جارتي معلمي معلمتي طالبي طالبتي طبيبي مهندسي سائقي عاملي تاجري رجلي ولدي طفلي شابي شيخي ضيفي قائدي ملكي اميري شاعري كاتبي فناني كتابي قلمي دفتري ورقتي مدرستي جامعتي صفي سبورتي حقيبتي طاولتي سريري سيارتي دراجتي قطاري طائرتي سفينتي حافلتي طريقي جسري ساعتي هاتفي شاشتي مفتاحي قفلي سكيني ملعقتي صحني كوبي كأسي ابريقي قدري مصباحي مرآتي سجادتي وسادتي بطانيتي ثوبي قميصي بنطلوني حذاءي قبعتي خاتمي عقدي عملي علمي فكرتي املي حلمي حبي حربي سلامي قوتي صبري عقلي قلبي نفسي جسمي وجهي عيني اذني انفي فمي يدي رأسي شعري سني لساني كفي اصبعي ظهري بطني صدري كتفي يومي ليلتي صباحي مساءي سنتي شهري اسبوعي وقتي زمني فصلي شتاءي صيفي ربيعي خريفي شمسي قمري نجمتي سماءي غيمتي مطري ريحي ناري ترابي حجري رملي موجتي اسدي نمري ذئبي ثعلبي فيلي جملي حصاني حماري بقرتي غنمي قطتي فأري ارنبي طيري عصفوري حمامتي صقري نسري سمكتي حيتي عقربي نحلتي ذبابتي حقي خيري شري سري خبري قصتي لغتي كلمتي حرفي جملتي سؤالي جوابي مشكلتي حلي رسالتي صورتي صوتي لوني شكلي رقمي عددي ثمني سوقي دكاني بنكي شركتي دشداشتي عبايتي يشماغي مخدتي شرشفي سفرتي تختي ثلاجتي مروحتي مبردتي مولدتي كراجي ستوتتي طباخي سماوري جدري طاستي صينيتي تشريبي كبتي شوربتي دجاجي دجاجتي فروجي صموني باميتي عدسي حمصي قيمري دبسي ثلجي استكاني مسكوفي كبابي دولمتي باجتي كليجتي تمني مرقي جنطتي كاشوكتي مرتبتي شقتي محلي كهوتي بيته داره غرفته مطبخه بابه شباكه سقفه جداره ارضه سطحه حديقته شارعه زقاقه محلته مدينته قريته بلده وطنه نهره بحره جبله صحراءه نخلته شجرته وردته زهرته تمره خبزه لحمه رزه حليبه جبنه بيضه عسله سكره ملحه زيته ماءه قهوته عصيره فاكهته تفاحته موزته برتقالته رمانه عنبه تينه بطيخه خياره طماطمه بصله ثومه جزره ابه امه اخه اخته ابنه بنته جدته عمته خالته زوجته صديقته جارته معلمته طالبته طبيبه مهندسه سائقه عامله تاجره رجله ولده طفله شابه شيخه ضيفه قائده اميره شاعره كاتبه فنانه كتابه قلمه دفتره ورقته مدرسته جامعته صفه سبورته حقيبته طاولته سريره سيارته دراجته قطاره طائرته سفينته حافلته طريقه جسره ساعته هاتفه شاشته مفتاحه قفله ملعقته صحنه كوبه كأسه ابريقه قدره مصباحه مرآته سجادته وسادته بطانيته ثوبه قميصه بنطلونه حذاءه قبعته خاتمه عقده فكرته امله حبه حربه سلامه قوته صبره عقله قلبه روحه نفسه جسمه وجهه عينه اذنه انفه فمه يده رأسه لسانه كفه اصبعه ظهره بطنه صدره كتفه يومه ليلته صباحه مساءه سنته شهره اسبوعه وقته زمنه فصله شتاءه صيفه ربيعه خريفه شمسه قمره نجمته سماءه غيمته مطره ريحه ناره ترابه حجره رمله موجته اسده نمره ذئبه ثعلبه فيله حصانه حماره بقرته غنمه قطته فأره ارنبه طيره عصفوره حمامته صقره نسره سمكته حيته عقربه نحلته ذبابته حقه خيره شره سره خبره قصته لغته كلمته حرفه جملته سؤاله جوابه مشكلته حله رسالته صورته صوته لونه شكله رقمه عدده ثمنه سوقه دكانه بنكه شركته دشداشته عبايته يشماغه مخدته شرشفه سفرته تخته ثلاجته مروحته مبردته مولدته كراجه ستوتته طباخه سماوره جدره طاسته صينيته تشريبه كبته شوربته دجاجته فروجه صمونه باميته عدسه حمصه قيمره دبسه ثلجه استكانه مسكوفه كبابه دولمته باجته كليجته تمنه مرقه جنطته كاشوكته مرتبته شقته كهوته بيتك دارك غرفتك مطبخك حمامك بابك شباكك سقفك جدارك ارضك سطحك حديقتك شارعك زقاقك محلتك مدينتك قريتك بلدك وطنك نهرك بحرك جبلك صحراءك نخلتك شجرتك وردتك زهرتك تمرك خبزك لحمك سمكك رزك حليبك جبنك بيضك عسلك سكرك ملحك زيتك ماءك قهوتك عصيرك فاكهتك تفاحتك موزتك برتقالتك رمانك عنبك تينك بطيخك خيارك طماطمك بصلك ثومك جزرك ابك امك اخك اختك ابنك بنتك جدك جدتك عمك عمتك خالك خالتك زوجك زوجتك صديقك صديقتك جارك جارتك معلمك معلمتك طالبك طالبتك طبيبك مهندسك سائقك عاملك تاجرك رجلك ولدك طفلك شابك شيخك ضيفك قائدك ملكك اميرك شاعرك كاتبك فنانك كتابك قلمك دفترك ورقتك مدرستك جامعتك صفك سبورتك حقيبتك طاولتك سريرك سيارتك دراجتك قطارك طائرتك سفينتك حافلتك طريقك جسرك ساعتك هاتفك شاشتك مفتاحك قفلك سكينك ملعقتك صحنك كوبك كأسك ابريقك قدرك مصباحك مرآتك سجادتك وسادتك بطانيتك ثوبك قميصك بنطلونك حذاءك قبعتك خاتمك عقدك عملك علمك فكرتك حلمك حبك حربك سلامك قوتك صبرك عقلك قلبك روحك نفسك جسمك وجهك عينك اذنك انفك فمك يدك رأسك شعرك سنك لسانك كفك اصبعك ظهرك بطنك صدرك كتفك يومك ليلتك صباحك مساءك سنتك شهرك اسبوعك وقتك زمنك فصلك شتاءك صيفك ربيعك خريفك شمسك قمرك نجمتك سماءك غيمتك مطرك ريحك نارك ترابك حجرك رملك موجتك اسدك نمرك ذئبك ثعلبك فيلك جملك حصانك حمارك بقرتك غنمك كلبك قطتك فأرك ارنبك طيرك عصفورك حمامتك صقرك نسرك سمكتك حيتك عقربك نحلتك ذبابتك حقك خيرك شرك سرك خبرك قصتك لغتك كلمتك حرفك جملتك سؤالك جوابك مشكلتك حلك رسالتك صورتك صوتك لونك شكلك رقمك عددك ثمنك سوقك دكانك بنكك شركتك دشداشتك عبايتك يشماغك مخدتك شرشفك سفرتك تختك ثلاجتك مروحتك مبردتك مولدتك كراجك ستوتتك طباخك سماورك جدرك طاستك صينيتك تشريبك كبتك شوربتك دجاجك دجاجتك فروجك صمونك باميتك عدسك حمصك قيمرك دبسك ثلجك استكانك مسكوفك كبابك دولمتك باجتك كليجتك تمنك مرقك جنطتك كاشوكتك مرتبتك شقتك محلك كهوتك بيتج دارج غرفتج مطبخج حمامج بابج شباكج سقفج جدارج ارضج سطحج حديقتج شارعج زقاقج محلتج مدينتج قريتج بلدج وطنج نهرج بحرج جبلج صحراءج نخلتج شجرتج وردتج زهرتج تمرج خبزج لحمج سمكج رزج حليبج جبنج بيضج عسلج سكرج ملحج زيتج ماءج قهوتج عصيرج فاكهتج تفاحتج موزتج برتقالتج رمانج عنبج تينج بطيخج خيارج طماطمج بصلج ثومج جزرج ابج امج اخج اختج ابنج بنتج جدج جدتج عمج عمتج خالج خالتج زوجج زوجتج صديقج صديقتج جارج جارتج معلمج معلمتج طالبج طالبتج طبيبج مهندسج سائقج عاملج تاجرج رجلج ولدج طفلج شابج شيخج ضيفج قائدج ملكج اميرج شاعرج كاتبج فنانج كتابج قلمج دفترج ورقتج مدرستج جامعتج صفج سبورتج حقيبتج طاولتج سريرج سيارتج دراجتج قطارج طائرتج سفينتج حافلتج طريقج جسرج ساعتج هاتفج شاشتج مفتاحج قفلج سكينج ملعقتج صحنج كوبج كأسج ابريقج قدرج مصباحج مرآتج سجادتج وسادتج بطانيتج ثوبج قميصج بنطلونج حذاءج قبعتج خاتمج عقدج عملج علمج فكرتج املج حلمج حبج حربج سلامج قوتج صبرج عقلج قلبج روحج نفسج جسمج وجهج عينج اذنج انفج فمج يدج رأسج شعرج سنج لسانج كفج اصبعج ظهرج بطنج صدرج كتفج يومج ليلتج صباحج مساءج سنتج شهرج اسبوعج وقتج زمنج فصلج شتاءج صيفج ربيعج خريفج شمسج قمرج نجمتج سماءج غيمتج مطرج ريحج نارج ترابج حجرج رملج موجتج اسدج نمرج ذئبج ثعلبج فيلج جملج حصانج حمارج بقرتج غنمج كلبج قطتج فأرج ارنبج طيرج عصفورج حمامتج صقرج نسرج سمكتج حيتج عقربج نحلتج ذبابتج حقج خيرج شرج سرج خبرج قصتج لغتج كلمتج حرفج جملتج سؤالج جوابج مشكلتج حلج رسالتج صورتج صوتج لونج شكلج رقمج عددج مالج ثمنج سوقج دكانج بنكج شركتج دشداشتج عبايتج يشماغج مخدتج شرشفج سفرتج تختج ثلاجتج مروحتج مبردتج مولدتج كراجج ستوتتج طباخج سماورج جدرج طاستج صينيتج تشريبج كبتج شوربتج دجاجج دجاجتج فروجج صمونج باميتج عدسج حمصج قيمرج دبسج ثلجج استكانج مسكوفج كبابج دولمتج باجتج كليجتج تمنج مرقج جنطتج كاشوكتج مرتبتج شقتج محلج كهوتج بيتها دارها غرفتها مطبخها حمامها بابها شباكها سقفها جدارها ارضها سطحها حديقتها شارعها زقاقها محلتها مدينتها قريتها بلدها وطنها نهرها بحرها جبلها صحراءها نخلتها شجرتها وردتها زهرتها تمرها خبزها لحمها سمكها رزها حليبها جبنها بيضها عسلها سكرها ملحها زيتها ماءها قهوتها عصيرها فاكهتها تفاحتها موزتها برتقالتها رمانها عنبها تينها بطيخها خيارها طماطمها بصلها ثومها جزرها ابها امها اخها اختها ابنها بنتها جدها جدتها عمها عمتها خالها خالتها زوجها زوجتها صديقها صديقتها جارها جارتها معلمها معلمتها طالبها طالبتها طبيبها مهندسها سائقها عاملها تاجرها رجلها ولدها طفلها شابها شيخها ضيفها قائدها اميرها شاعرها كاتبها فنانها كتابها قلمها دفترها ورقتها مدرستها جامعتها صفها سبورتها حقيبتها طاولتها سريرها سيارتها دراجتها قطارها طائرتها سفينتها حافلتها طريقها جسرها ساعتها هاتفها شاشتها مفتاحها قفلها سكينها ملعقتها صحنها كوبها كأسها ابريقها قدرها مصباحها مرآتها سجادتها وسادتها بطانيتها ثوبها قميصها بنطلونها حذاءها قبعتها خاتمها عقدها فكرتها املها حبها حربها سلامها قوتها صبرها عقلها قلبها روحها نفسها جسمها وجهها عينها اذنها انفها فمها يدها رأسها سنها لسانها كفها اصبعها ظهرها بطنها صدرها كتفها يومها ليلتها صباحها مساءها سنتها شهرها اسبوعها وقتها زمنها فصلها شتاءها صيفها ربيعها خريفها شمسها قمرها نجمتها سماءها غيمتها مطرها ريحها نارها ترابها حجرها رملها موجتها اسدها نمرها ذئبها ثعلبها فيلها جملها حصانها حمارها بقرتها غنمها كلبها قطتها فأرها ارنبها طيرها عصفورها حمامتها صقرها نسرها سمكتها حيتها عقربها نحلتها ذبابتها حقها خيرها شرها سرها خبرها قصتها لغتها كلمتها حرفها جملتها سؤالها جوابها مشكلتها حلها رسالتها صورتها صوتها لونها شكلها رقمها عددها ثمنها سوقها دكانها بنكها شركتها دشداشتها عبايتها يشماغها مخدتها شرشفها سفرتها تختها ثلاجتها مروحتها مبردتها مولدتها كراجها ستوتتها طباخها سماورها جدرها طاستها صينيتها تشريبها كبتها شوربتها دجاجها دجاجتها فروجها صمونها باميتها عدسها حمصها قيمرها دبسها ثلجها استكانها مسكوفها كبابها دولمتها باجتها كليجتها تمنها مرقها جنطتها كاشوكتها مرتبتها شقتها محلها كهوتها بيتنا دارنا غرفتنا مطبخنا حمامنا بابنا شباكنا سقفنا جدارنا ارضنا سطحنا حديقتنا شارعنا زقاقنا محلتنا مدينتنا قريتنا بلدنا وطننا نهرنا بحرنا جبلنا صحراءنا نخلتنا شجرتنا وردتنا زهرتنا تمرنا خبزنا لحمنا سمكنا رزنا حليبنا جبننا بيضنا عسلنا سكرنا ملحنا زيتنا ماءنا قهوتنا عصيرنا فاكهتنا تفاحتنا موزتنا برتقالتنا رماننا عنبنا تيننا بطيخنا خيارنا طماطمنا بصلنا ثومنا جزرنا ابنا امنا اخنا اختنا ابننا بنتنا جدنا جدتنا عمنا عمتنا خالنا خالتنا زوجنا زوجتنا صديقنا صديقتنا جارنا جارتنا معلمنا معلمتنا طالبنا طالبتنا طبيبنا مهندسنا سائقنا عاملنا تاجرنا رجلنا ولدنا طفلنا شابنا شيخنا ضيفنا قائدنا اميرنا شاعرنا كاتبنا فناننا كتابنا قلمنا دفترنا ورقتنا مدرستنا جامعتنا صفنا سبورتنا حقيبتنا طاولتنا سريرنا سيارتنا دراجتنا قطارنا طائرتنا سفينتنا حافلتنا طريقنا جسرنا ساعتنا هاتفنا شاشتنا مفتاحنا قفلنا سكيننا ملعقتنا صحننا كوبنا كأسنا";
+let dbp=null,seeded=false;
+const open=()=>dbp||(dbp=new Promise((ok,no)=>{const r=indexedDB.open("itk_dict",2);
+ r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains("w")){const st=d.createObjectStore("w",{keyPath:"w"});st.createIndex("l","l")}if(!d.objectStoreNames.contains("m"))d.createObjectStore("m",{keyPath:"w"})};
+ r.onsuccess=()=>{const db=r.result;let sv=null;try{sv=localStorage.getItem("aiapp_seedv")}catch(e){}if(seeded||sv==SEEDV)return ok(db);seeded=true;const tx=db.transaction("w","readwrite"),st=tx.objectStore("w");SEED.split(" ").forEach(w=>{w=nd(w);if(w&&OKW.test(w)&&w.length<=10)st.put({w,l:w.length})});tx.oncomplete=()=>{try{localStorage.setItem("aiapp_seedv",SEEDV)}catch(e){}ok(db)};tx.onerror=()=>ok(db)};
+ r.onerror=()=>no(r.error)}));
+const req=(mk)=>open().then(db=>new Promise(r=>{const q=mk(db);q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}));
+const counts=async()=>{const o=[];for(let i=1;i<=10;i++)o.push(await req(db=>db.transaction("w").objectStore("w").index("l").count(IDBKeyRange.only(i)))||0);return o};
+const has=async w=>{w=nd(String(w).trim());if(!w)return false;
+ const vs=[w];if(/^[اأإآ]/.test(w))["ا","أ","إ","آ"].forEach(a=>vs.push(a+w.slice(1)));
+ if(/[هة]$/.test(w))vs.push(w.slice(0,-1)+(w.slice(-1)==="ه"?"ة":"ه"));
+ if(/[يى]$/.test(w))vs.push(w.slice(0,-1)+(w.slice(-1)==="ي"?"ى":"ي"));
+ for(const v of new Set(vs))if(await req(db=>db.transaction("w").objectStore("w").get(v)))return true;return false};
+/* بحث بنمط: ? او ؟ = حرف واحد، * = اي عدد حروف */
+const search=async(pat,len,lim=60)=>{const db=await open();pat=nd(String(pat).trim());
+ const re=new RegExp("^"+[...pat].map(c=>c==="*"?".*":/[?؟_]/.test(c)?".":c.replace(/[.+^${}()|[\]\\]/g,"\\$&")).join("")+"$");
+ const m=pat.match(/^[^*?؟_]+/),pre=m?m[0]:"";
+ return new Promise(res=>{const st=db.transaction("w").objectStore("w"),out=[];let src=st,rg=null;
+  if(pre)rg=IDBKeyRange.bound(pre,pre+"\uffff");else if(len){src=st.index("l");rg=IDBKeyRange.only(+len)}
+  const q=src.openCursor(rg);let n=0;
+  q.onsuccess=()=>{const c=q.result;if(!c||out.length>=lim||n++>3e6)return res(out);const w=c.value.w;if((!len||w.length===+len)&&re.test(w))out.push(w);c.continue()};
+  q.onerror=()=>res(out)})};
+/* استيراد ملف نصي كبير بالقطعة (كلمة بكل سطر، او اول كلمة بالسطر) */
+const imp=async(file,prog,ctl)=>{const rd=file.stream().getReader(),dec=new TextDecoder("utf-8");let carry="",batch=new Set(),read=0,seen=0,kept=0;
+ const flush=async()=>{if(!batch.size)return;const db=await open();const b=[...batch];batch.clear();
+  await new Promise(ok=>{const tx=db.transaction("w","readwrite"),st=tx.objectStore("w");b.forEach(w=>{const q=st.add({w,l:w.length});q.onerror=e=>{e.preventDefault();e.stopPropagation()}});tx.oncomplete=ok;tx.onerror=ok;tx.onabort=ok})};
+ const take=line=>{seen++;const w=nd((line.trim().split(/[\s,;\t|]+/)[0]||""));if(w.length>=1&&w.length<=10&&OKW.test(w)){batch.add(w);kept++}};
+ for(;;){const r=await rd.read();if(r.done)break;read+=r.value.length;const ls=(carry+dec.decode(r.value,{stream:true})).split(/\r?\n/);carry=ls.pop();ls.forEach(take);
+  if(batch.size>=4000)await flush();prog({read,size:file.size,seen,kept});if(ctl.stop){rd.cancel();break}}
+ take(carry+dec.decode());await flush();prog({read,size:file.size,seen,kept,done:1});return{seen,kept}};
+const addMany=async arr=>{const db=await open();const out=[];await new Promise(ok=>{const tx=db.transaction("w","readwrite"),st=tx.objectStore("w");arr.forEach(w=>{const q=st.add({w,l:w.length});q.onsuccess=()=>out.push(w);q.onerror=e=>{e.preventDefault();e.stopPropagation()}});tx.oncomplete=ok;tx.onerror=ok;tx.onabort=ok});return out};
+const clear=async()=>{await req(db=>db.transaction("w","readwrite").objectStore("w").clear());await req(db=>db.transaction("m","readwrite").objectStore("m").clear());try{localStorage.removeItem("aiapp_seedv")}catch(e){}seeded=false;dbp=null;await open()};
+/* المعاني: الكلمة ما تنحفظ الا وياها معناها (النوع + الشرح + المصدر) */
+const vars=w=>{w=nd(String(w).trim());const vs=[w];if(/^ال./.test(w))vs.push(w.slice(2));if(/^[اأإآ]/.test(w))["ا","أ","إ","آ"].forEach(a=>vs.push(a+w.slice(1)));if(/[هة]$/.test(w))vs.push(w.slice(0,-1)+(w.slice(-1)==="ه"?"ة":"ه"));if(/[يى]$/.test(w))vs.push(w.slice(0,-1)+(w.slice(-1)==="ي"?"ى":"ي"));return[...new Set(vs)].filter(Boolean)};
+const mean=async w=>{for(const v of vars(w)){const r=await req(db=>db.transaction("m").objectStore("m").get(v));if(r)return r}return null};
+const hasMean=async w=>!!(await req(db=>db.transaction("m").objectStore("m").get(w)));
+const mcount=async()=>await req(db=>db.transaction("m").objectStore("m").count())||0;
+const addMeanings=async list=>{const db=await open();let done=false;await new Promise(ok=>{const tx=db.transaction(["w","m"],"readwrite"),sw=tx.objectStore("w"),sm=tx.objectStore("m");list.forEach(o=>{const q=sw.add({w:o.w,l:o.w.length});q.onerror=e=>{e.preventDefault();e.stopPropagation()};sm.put(o)});tx.oncomplete=()=>{done=true;ok()};tx.onerror=ok;tx.onabort=ok});return done?list:[]};
+const dump=async()=>{const db=await open();const g=(n,m)=>new Promise(r=>{const q=db.transaction(n).objectStore(n)[m]();q.onsuccess=()=>r(q.result);q.onerror=()=>r([])});return{w:await g("w","getAllKeys"),m:await g("m","getAll")}};
+const load=async d=>{const db=await open();await new Promise(ok=>{const tx=db.transaction(["w","m"],"readwrite"),sw=tx.objectStore("w"),sm=tx.objectStore("m");(d.w||[]).forEach(w=>{const q=sw.add({w,l:w.length});q.onerror=e=>{e.preventDefault();e.stopPropagation()}});(d.m||[]).forEach(o=>sm.put(o));tx.oncomplete=ok;tx.onerror=ok;tx.onabort=ok})};
+const putMeaning=async o=>{await req(db=>db.transaction("m","readwrite").objectStore("m").put(o));return o};
+return{has,search,counts,imp,clear,open,addMany,nd,mean,hasMean,mcount,addMeanings,putMeaning,dump,load,ok:w=>OKW.test(w)}
+})();
+/*DICT-END*/
+
+</script>
+<script>
+/*WEB-START: البحث بالانترنت - 15 مصدر*/
+const WEB=(()=>{
+const AR=s=>/[\u0600-\u06FF]/.test(s);
+const nzw=s=>String(s).toLowerCase().replace(/[\u064B-\u0652\u0640]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[^\p{L}\p{N}\s]/gu," ").replace(/\s+/g," ").trim();
+const STOP=new Set("شنو منو هو هي ما من في على عن ابحث دور لي اي ايش شلون كيف هل متى وين اين ماذا لماذا شكد كم the what who how is are of for and".split(" "));
+const toks=s=>nzw(s).split(" ").filter(w=>w.length>2&&!STOP.has(w)).map(w=>w.replace(/^ال/,""));
+const enc=encodeURIComponent;
+const FORCE=/^\s*(ابحث|دور|فتش|search|google|كوكل)(?=\s|$)/i;
+const forced=t=>FORCE.test(t);
+const cleanQ=t=>{let q=t.replace(FORCE,"").replace(/^\s*(لي|عن|على|في|عليه)\s+/,"").replace(/^\s*(شنو هي|شنو هو|منو هو|منو هي|ما هو|ما هي|شنو|منو|what is|who is|what are)\s+/i,"").replace(/[؟?!]+$/,"").trim();return q.length>=2?q:t.trim()};
+const isCode=t=>/كود|برمج|جافا|بايثون|javascript|python|html|css|react|node|npm|github|api|error|خطا|function|دالة|sql|php|json|regex|bug|compile|git\b|linux|android|c\+\+|\bjs\b/i.test(t);
+const clean=s=>{if(!s)return"";try{s=new DOMParser().parseFromString(String(s),"text/html").body.textContent||""}catch(e){}
+ s=s.replace(/\[\d+\]/g,"").replace(/\s+/g," ").trim();if(s.length>380){const c=s.slice(0,380),i=Math.max(c.lastIndexOf(". "),c.lastIndexOf("۔"),c.lastIndexOf("؟ "));s=(i>150?c.slice(0,i+1):c.slice(0,c.lastIndexOf(" "))+"…")}return s};
+const BAD=/may refer to|disambiguation|قد يشير إلى|قد تشير إلى|قد تعني|صفحة توضيح/i;
+const J=async(u,ms=7000)=>{const c=new AbortController(),id=setTimeout(()=>c.abort(),ms);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)return null;return await r.json()}catch(e){return null}finally{clearTimeout(id)}};
+const T=async(u,ms=9000)=>{const c=new AbortController(),id=setTimeout(()=>c.abort(),ms);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)return null;return await r.text()}catch(e){return null}finally{clearTimeout(id)}};
+const tr=async q=>{const d=await J("https://api.mymemory.translated.net/get?q="+enc(q)+"&langpair=ar|en",4000);const t=d&&d.responseData&&d.responseData.translatedText;return t&&!/MYMEMORY|INVALID/i.test(t)?t:null};
+const wiki=(lang,host)=>async q=>{
+ const d=await J("https://"+lang+"."+host+".org/w/api.php?action=query&generator=search&gsrsearch="+enc(q)+"&gsrlimit=3&prop=extracts|info&inprop=url&exintro=1&explaintext=1&exsentences=3&exlimit=3&format=json&origin=*");
+ const p=d&&d.query&&d.query.pages;if(!p)return null;
+ const a=Object.values(p).sort((x,y)=>x.index-y.index).find(x=>x.extract&&x.extract.length>20);
+ return a?{title:a.title,t:a.extract,u:a.fullurl}:null};
+/* المصادر: g=مجموعة، w=وزن الاولوية، en=يحتاج استعلام انكليزي، when=متى يشتغل */
+const always=()=>1,short=(r,q)=>q.split(" ").length<=3,codeQ=(r,q,a,c)=>c;
+const off=new Set((()=>{try{return JSON.parse(localStorage.getItem("aiapp_off")||"[]")}catch(e){return[]}})());
+const S=[
+{id:"ddg",n:"DuckDuckGo (نت)",g:"net",w:1.5,when:always,run:async q=>{const d=await J("https://api.duckduckgo.com/?q="+enc(q)+"&format=json&no_html=1&skip_disambig=1");if(!d)return null;const t=d.Answer||d.AbstractText||d.Definition||(d.RelatedTopics&&d.RelatedTopics[0]&&d.RelatedTopics[0].Text);return t?{title:d.Heading||q,t,u:d.AbstractURL||d.DefinitionURL||"",free:1}:null}},
+{id:"web",n:"بحث ويب (مثل كروم)",g:"chrome",w:.9,when:always,run:async q=>{
+ const target="https://html.duckduckgo.com/html/?q="+enc(q);
+ for(const P of["https://api.allorigins.win/raw?url=","https://corsproxy.io/?url="]){
+  const h=await T(P+enc(target));if(!h)continue;
+  try{const doc=new DOMParser().parseFromString(h,"text/html");
+   for(const e of doc.querySelectorAll(".result")){const a=e.querySelector(".result__a"),s=e.querySelector(".result__snippet");if(!a||!s||e.classList.contains("result--ad"))continue;
+    let u=a.getAttribute("href")||"";const m=u.match(/uddg=([^&]+)/);if(m)try{u=decodeURIComponent(m[1])}catch(x){}
+    const t=s.textContent.trim();if(t.length>20)return{title:a.textContent.trim(),t,u}}}catch(e){}}
+ return null}},
+{id:"wpar",n:"ويكيبيديا العربية",g:"sites",w:1.3,when:(r,q,a)=>a,run:wiki("ar","wikipedia")},
+{id:"wpen",n:"Wikipedia",g:"sites",w:1.1,en:1,when:always,run:wiki("en","wikipedia")},
+{id:"wpsi",n:"Simple Wikipedia",g:"sites",w:1,en:1,when:always,run:wiki("simple","wikipedia")},
+{id:"wktar",n:"ويكاموس (قاموس عربي)",g:"speech",w:1.1,when:(r,q,a)=>a&&short(r,q),run:wiki("ar","wiktionary")},
+{id:"wkten",n:"Wiktionary",g:"speech",w:1,en:1,when:short,run:wiki("en","wiktionary")},
+{id:"wqt",n:"ويكي اقتباس",g:"speech",w:1.1,when:r=>/قال|مقوله|اقتباس|حكمه|quote|saying/i.test(r),run:async(q,a)=>wiki(a?"ar":"en","wikiquote")(q)},
+{id:"wd",n:"Wikidata",g:"brain",w:.8,when:always,run:async(q,a)=>{const d=await J("https://www.wikidata.org/w/api.php?action=wbsearchentities&search="+enc(q)+"&language="+(a?"ar":"en")+"&uselang="+(a?"ar":"en")+"&limit=1&format=json&origin=*");const x=d&&d.search&&d.search[0];return x&&x.description?{title:x.label,t:x.label+": "+x.description,u:"https:"+(x.url||"")}:null}},
+{id:"ol",n:"Open Library (كتب)",g:"sites",w:1.2,when:r=>/كتاب|رواي|مؤلف|كاتب|book|novel|author/i.test(r),run:async q=>{const d=await J("https://openlibrary.org/search.json?q="+enc(q)+"&limit=1");const x=d&&d.docs&&d.docs[0];return x?{title:x.title,t:"كتاب «"+x.title+"»"+(x.author_name?" للمؤلف "+x.author_name[0]:"")+(x.first_publish_year?" (اول نشر "+x.first_publish_year+")":""),u:"https://openlibrary.org"+x.key}:null}},
+{id:"so",n:"StackOverflow (كودات)",g:"code",w:1.6,en:1,when:codeQ,run:async q=>{const d=await J("https://api.stackexchange.com/2.3/search/excerpts?order=desc&sort=relevance&q="+enc(q)+"&site=stackoverflow&pagesize=1");const x=d&&d.items&&d.items[0];return x?{title:x.title,t:(x.title?x.title+": ":"")+(x.excerpt||""),u:"https://stackoverflow.com/questions/"+x.question_id}:null}},
+{id:"mdn",n:"MDN (كودات ويب)",g:"code",w:1.6,en:1,when:codeQ,run:async q=>{const d=await J("https://developer.mozilla.org/api/v1/search?q="+enc(q)+"&locale=en-US&size=1");const x=d&&d.documents&&d.documents[0];return x?{title:x.title,t:x.title+": "+(x.summary||""),u:"https://developer.mozilla.org"+x.mdn_url}:null}},
+{id:"gh",n:"GitHub (كودات)",g:"code",w:1.2,en:1,when:(r,q,a,c)=>c||/مكتبه|مشروع|repo|library|framework/i.test(r),run:async q=>{const d=await J("https://api.github.com/search/repositories?q="+enc(q)+"&per_page=1");const x=d&&d.items&&d.items[0];return x&&x.description?{title:x.full_name,t:x.full_name+" ⭐"+x.stargazers_count+": "+x.description,u:x.html_url}:null}},
+{id:"npm",n:"npm (مكتبات)",g:"code",w:1.1,en:1,when:(r,q,a,c)=>c||/مكتبه|package|npm/i.test(r),run:async q=>{const d=await J("https://registry.npmjs.org/-/v1/search?text="+enc(q)+"&size=1");const x=d&&d.objects&&d.objects[0]&&d.objects[0].package;return x&&x.description?{title:x.name,t:x.name+" v"+x.version+": "+x.description,u:(x.links&&x.links.npm)||""}:null}},
+{id:"hn",n:"Hacker News (اخبار تقنية)",g:"net",w:.9,en:1,when:(r,q,a,c)=>c||/اخبار|خبر|تقني|news|tech/i.test(r),run:async q=>{const d=await J("https://hn.algolia.com/api/v1/search?query="+enc(q)+"&hitsPerPage=1");const x=d&&d.hits&&d.hits[0];return x&&x.title?{title:x.title,t:x.title+" ("+(x.points||0)+" نقطة)",u:x.url||"https://news.ycombinator.com/item?id="+x.objectID}:null}}
+];
+const search=async raw=>{
+ if(typeof navigator!=="undefined"&&(navigator.onLine===false||window.itkOnline===false))return{t:"ما اكو انترنت هسه 📵 شغله وجرب مرة ثانية.",o:"none"};
+ const q=cleanQ(raw),ar=AR(q),code=isCode(raw);let enP=null;const en=()=>enP||(enP=ar?tr(q):Promise.resolve(q));
+ const act=S.filter(s=>!off.has(s.id)&&s.when(raw,q,ar,code));
+ const res=(await Promise.all(act.map(async s=>{try{
+  const qq=s.en?await en():q;if(!qq)return null;
+  const r=await s.run(qq,ar&&!s.en);if(!r)return null;
+  const t=clean(r.t);if(t.length<15||BAD.test(t))return null;
+  const tk=toks(qq),hay=nzw((r.title||"")+" "+t);let hit=0;tk.forEach(w=>{if(hay.includes(w))hit++});
+  if(tk.length&&!hit&&!r.free)return null;
+  const sc=(tk.length?hit/tk.length:.5)*10*s.w+(code&&s.g==="code"?3:0)+Math.min(t.length/200,1);
+  return{t,u:r.u||"",src:s.n,sc}}catch(e){return null}}))).filter(Boolean).sort((a,b)=>b.sc-a.sc);
+ if(!res.length)return{t:"دورت بـ "+act.length+" مصدر وما لقيت جواب واضح 🤔 جرب صياغة ثانية، او علمني: «تعلم: السؤال = الجواب»",o:"none"};
+ const b=res[0];
+ return{t:b.t+"\n\n🌐 المصدر: "+b.src+(b.u?"\n"+b.u:"")+"\n📡 جاوبوا "+res.length+" من "+act.length+" مصادر",o:"web"}};
+return{search,forced,count:S.length,sources:S.map(s=>({id:s.id,n:s.n,g:s.g})),off,toggle:(id,on)=>{on?off.delete(id):off.add(id);try{localStorage.setItem("aiapp_off",JSON.stringify([...off]))}catch(e){}}}
+})();
+/*WEB-END*/
+
+</script>
+<script>
+const $=s=>document.querySelector(s),H=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const LS=(k,d)=>{try{return JSON.parse(localStorage.getItem("aiapp_"+k))??d}catch(e){return d}},SV=(k,v)=>{try{localStorage.setItem("aiapp_"+k,JSON.stringify(v))}catch(e){}};
+let say=LS("say",false),webOn=LS("web",true),busy=0,fixQ=null;
+const ORG={semantic:"🧠 ذاكرة المعلومات",episodic:"📖 ذاكرة المحادثات",skill:"🛠 مهارة",taught:"✏️ علّمتني","lang-memory":"🔤 اللغة (استرجاع)","lang-gen":"🔤 اللغة (توليد)",web:"🌐 الانترنت",none:"❓ ما اعرف"};
+/* القوائم */
+const VIEWS=[["chat","💬 المحادثة"],["mem","🧠 الذاكرة"],["teach","✏️ علّمه"],["dict","📖 القاموس"],["learn","🎓 وضع التعليم"],["auto","🤖 تلقائي"],["src","🌐 المصادر"],["set","⚙️ الإعدادات"]];
+const menu=$("#menu"),veil=$("#veil");
+const tgl=o=>{menu.classList.toggle("o",o);veil.hidden=!o};
+const show=n=>{VIEWS.forEach(([k,l])=>{$("#v-"+k).hidden=k!==n;if(k===n)$("#ttl").textContent=l});[...menu.children].forEach((b,i)=>b.classList.toggle("on",VIEWS[i][0]===n));tgl(false);if(n==="mem")stats();if(n==="dict")dstats();if(n==="src")drawSrc();if(n==="set")lab()};
+VIEWS.forEach(([k,l])=>{const b=H("button",0,l);b.onclick=()=>show(k);menu.append(b)});
+$("#mb").onclick=()=>tgl(!menu.classList.contains("o"));veil.onclick=()=>tgl(false);
+let netMode=navigator.onLine?"online":"offline";
+window.itkOnline=navigator.onLine;
+const net=()=>{netMode=(navigator.onLine&&window.itkOnline!==false)?"online":"offline";$("#net").textContent=netMode==="online"?"🟢 ONLINE":"🟠 OFFLINE";$("#net").title=netMode==="online"?"الاتصال متاح — البحث الخارجي يعمل حسب الإعدادات":"بدون إنترنت — الذاكرة والقاموس المحليان متاحان";document.documentElement.dataset.netmode=netMode};
+net();addEventListener("online",()=>{window.itkOnline=true;net()});addEventListener("offline",()=>{window.itkOnline=false;net()});
+// Probe real reachability too: Android can report Wi-Fi connected while internet is unavailable.
+(async()=>{const probe=async()=>{if(!navigator.onLine){window.itkOnline=false;net();return}try{const c=new AbortController(),id=setTimeout(()=>c.abort(),4500);await fetch("https://www.wikipedia.org/favicon.ico?itk="+Date.now(),{mode:"no-cors",cache:"no-store",signal:c.signal});clearTimeout(id);window.itkOnline=true}catch(e){window.itkOnline=false}net()};await probe();setInterval(probe,5000)})();
+/* المحادثة */
+const box=$("#box"),inp=$("#inp");
+const info=(wr,t,o,q)=>{const r=H("div","i");r.append(H("span",0,ORG[o]||o));
+ if(q){const u=H("button",0,"👍"),d=H("button",0,"👎");u.onclick=()=>{BRAIN.thumbs(q,t,true);u.textContent="✔";d.remove()};d.onclick=()=>{BRAIN.thumbs(q,t,false);d.remove();fixQ=q;add("a","عذراً! شنو الجواب الصح؟ اكتبه واتعلمه 🙏","none")};r.append(u,d)}wr.append(r)};
+const add=(who,t,o,q)=>{const wr=H("div","m "+who),x=H("div","t",t);wr.append(x);if(who==="a"&&o)info(wr,t,o,q);box.append(wr);box.scrollTop=box.scrollHeight;return{x,wr}};
+const speak=t=>{if(!say||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="ar";speechSynthesis.speak(u)}catch(e){}};
+const draw=()=>{box.innerHTML="";const h=BRAIN.ok?BRAIN.history(60):[];if(!h.length)add("a","هلا! اني دماغ iTaiTek. عندي ذاكرة تبقى للابد: عرفني بنفسك (اسمي ... / عمري ... / احب ...) واذا ما عرفت اجاوب ادور بالانترنت 🌐 (او اكتب «دور على ...»).");let q="";h.forEach(e=>{if(e.r==="u"){q=e.x;add("u",e.x)}else add("a",e.x,e.o,q)})};
+const answer=t=>{
+ if(fixQ){const q=fixQ;fixQ=null;BRAIN.teach(q,t);return{t:"تعلمت ✅ المرة الجاية راح اجاوبك: "+t,o:"taught"}}
+ const tm=t.match(/^\s*تعلم[:：]?\s*(.+?)\s*[=＝]\s*([\s\S]+)$/);if(tm){BRAIN.teach(tm[1].trim(),tm[2].trim());return{t:"تعلمت ✅ اذا سألتني «"+tm[1].trim()+"» راح اجاوبك: "+tm[2].trim(),o:"taught"}}
+ const r=BRAIN.think(t,skills);BRAIN.observe(t);
+ if(!r.t)return{t:pk(["لسه ما تعلمت كلمات كافية عن هذا 🤔 احجي وياي اكثر، او الصق نص من قائمة «علّمه»","هذا الشي ما اعرفه بعد. علمني: «تعلم: السؤال = الجواب»","جرب تسألني عن الوقت، نكته، حساب، او كل «شتسوي»"]),o:"none"};
+ return r};
+let pendingImage=null;
+const send=t=>{t=(t||inp.value).trim();if((!t&&!pendingImage)||busy)return;const hasImage=!!pendingImage;if(hasImage&&!t)t="أريد تحليل الصورة المرفقة";if(!BRAIN.ok){add("a","الدماغ يتحمل ذاكرته، جرب بعد ثانية...");return}inp.value="";const userMsg=add("u",t||"صورة مرفقة");if(pendingImage){const im=document.createElement("img");im.className="chat-image";im.src=pendingImage;im.alt="الصورة المرفقة";userMsg.x.appendChild(im);pendingImage=null;$("#mediaPreview").innerHTML="";}busy=1;const w=add("a","");w.x.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';
+ setTimeout(async()=>{let r;try{r=await dictCmd(t)||answer(t)}catch(e){r={t:"صار خطأ بسيط",o:"none"}}
+  if(hasImage)r={t:"وصلتني الصورة وانعرضت بالمحادثة. أگدر أحتفظ بالمرفق وأتعامل ويا النص اللي تكتبه، لكن تحليل تفاصيل الصورة نفسها يحتاج محرك رؤية (Vision) غير مربوط حالياً؛ ما راح أخمّن محتواها.",o:"image"};
+  const online=navigator.onLine&&window.itkOnline!==false;
+  if(online){
+   const rq=RES.want(t,r);if(rq){try{const x=await RES.run(rq,()=>{});if(x)r=x}catch(e){}}
+   const fw=WEB.forced(t);
+   if(webOn&&r.o!=="taught"&&(fw||r.o==="none"||r.o==="lang-gen")){try{const x=await WEB.search(t);if(x.o==="web"||fw)r=x}catch(e){}}
+  }else if(r.o==="none"||r.o==="lang-gen"){
+   r={t:"📴 هسه التطبيق بوضع OFFLINE. أگدر أجاوب من الذاكرة والقاموس والمعلومات المحفوظة، بس ما أگدر أجيب معلومات جديدة من المواقع إلا من يرجع الإنترنت.\n\nتگدر تعلّمني الجواب من زر «علّمه» حتى يبقى محفوظ ويشتغل بدون نت.",o:"none"};
+  }
+  if(r.o!=="taught")r.t=SHR(String(r.t||"").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"" ).replace(/\s{2,}/g," "));BRAIN.remember("u",t);BRAIN.remember("a",r.t,r.o);w.x.textContent=r.t;info(w.wr,r.t,r.o,t);busy=0;box.scrollTop=box.scrollHeight;speak(r.t)},300+Math.random()*350)};
+["شكد الساعة","نكتة","لغز","شنو تعرف عني","تتذكر","احسب 12×7","دور على بغداد"].forEach(q=>{const c=H("button",0,q);c.onclick=()=>send(q);$("#chips").append(c)});
+$("#go").onclick=()=>send();inp.onkeydown=e=>{if(e.key==="Enter")send()};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let recognition=null;
+$("#mic").onclick=()=>{if(!SR){alert("المتصفح ما يدعم الإدخال الصوتي. جرّب Chrome مع السماح بالمايكروفون.");return}try{recognition=new SR();recognition.lang="ar-IQ";recognition.interimResults=false;recognition.onresult=e=>{const phrase=e.results?.[0]?.[0]?.transcript||"";if(phrase)send(phrase)};recognition.onerror=e=>{if(e.error!=="no-speech")alert("تعذر تشغيل المايكروفون: "+e.error)};recognition.start()}catch(e){alert("ما كدرت أشغل المايكروفون: "+e.message)}};
+$("#stopVoice").onclick=()=>{try{recognition&&recognition.stop()}catch(e){}if(window.speechSynthesis)speechSynthesis.cancel()};
+$("#pickImage").onclick=()=>$("#imageFile").click();
+$("#imageFile").onchange=async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")){alert("اختار ملف صورة");return}if(f.size>12*1024*1024){alert("حجم الصورة لازم يكون أقل من 12MB");e.target.value="";return}const rd=new FileReader();rd.onload=()=>{pendingImage=String(rd.result);const im=document.createElement("img");im.src=pendingImage;im.alt="معاينة الصورة قبل الإرسال";const cap=document.createElement("small");cap.textContent=f.name+" — "+Math.round(f.size/1024)+" KB";const rm=document.createElement("button");rm.type="button";rm.textContent="إزالة";rm.onclick=()=>{pendingImage=null;$("#mediaPreview").innerHTML="";$("#imageFile").value=""};$("#mediaPreview").replaceChildren(im,cap,rm)};rd.readAsDataURL(f);e.target.value=""};
+/* الذاكرة والتعليم */
+const stats=()=>$("#st").textContent=BRAIN.ok?BRAIN.stats():"الذاكرة تتحمل...";$("#rf").onclick=stats;
+$("#tb1").onclick=()=>{const q=$("#tq").value.trim(),a=$("#ta1").value.trim();if(!q||!a)return;BRAIN.teach(q,a);$("#tq").value=$("#ta1").value="";$("#tm1").textContent="تعلمت ✅"};
+const feed=async t=>{if(!BRAIN.ok){$("#pr").textContent="انتظر لحظة، الذاكرة تتحمل...";return}$("#pr").textContent="يتعلم...";const n=await BRAIN.feed(t,(i,m)=>$("#pr").textContent="تعلم "+i+" من "+m+" جملة");$("#pr").textContent="خلص! تعلم "+n+" جملة جديدة وانحفظت ✅"};
+$("#tb").onclick=()=>{const v=$("#ta").value;if(v.trim()){feed(v);$("#ta").value=""}};
+$("#fl").onchange=async e=>{const f=e.target.files[0];if(!f)return;if(f.size>8e6){$("#pr").textContent="الملف كبير، اكبر حجم 8MB";return}feed(await f.text());e.target.value=""};
+/* المصادر */
+const GN={net:"نت",chrome:"كروم",sites:"مواقع",code:"كودات",speech:"كلام",brain:"عقل"};
+const drawSrc=()=>{const l=$("#sl");l.innerHTML="";WEB.sources.forEach(s=>{const lb=H("label","sw"),c=H("input");c.type="checkbox";c.style.width="auto";c.checked=!WEB.off.has(s.id);c.onchange=()=>WEB.toggle(s.id,c.checked);lb.append(H("span",0,s.n+" · "+(GN[s.g]||s.g)),c);l.append(lb)})};
+/* الإعدادات */
+$("#cw").checked=webOn;$("#cw").onchange=e=>{webOn=e.target.checked;SV("web",webOn)};
+$("#cs").checked=say;$("#cs").onchange=e=>{say=e.target.checked;SV("say",say)};
+const lab=()=>$("#pb").textContent="👤 الملف الشخصي: "+BRAIN.profile();
+$("#pb").onclick=async()=>{const n=prompt("اسم الملف الشخصي (كل اسم له ذاكرة منفصلة):\nالموجود: "+BRAIN.profiles().join("، "),BRAIN.profile());if(n&&n.trim()){await BRAIN.use(n.trim());lab();draw()}};
+$("#eb").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([BRAIN.exportAll()],{type:"application/json"}));a.download="itaitek-brain-"+BRAIN.profile()+".json";a.click();$("#sn").textContent="تم تنزيل النسخة الاحتياطية ✅"};
+$("#ib").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{await BRAIN.importAll(await f.text());$("#sn").textContent="تم الاستيراد ✅";draw()}catch(x){$("#sn").textContent="فشل: "+(x.message||x)}e.target.value=""};
+/* القاموس */
+const dstats=async()=>{const c=await DICT.counts(),tot=c.reduce((a,b)=>a+b,0);$("#dc").textContent=c.map((n,i)=>(i+1)+" حرف: "+n.toLocaleString("ar")).join("\n")+"\n──────\nالمجموع: "+tot.toLocaleString("ar")};
+$("#dr").onclick=dstats;
+const dl=$("#dl");for(let i=1;i<=10;i++){const o=H("option",0,i+" احرف");o.value=i;dl.append(o)}
+let ctl={};
+$("#df").onchange=async e=>{const f=e.target.files[0];if(!f)return;ctl={stop:0};$("#ds").hidden=false;
+ const r=await DICT.imp(f,p=>$("#dp").textContent=(p.done?"خلص ✅ ":"يستورد... ")+Math.round(p.read/p.size*100)+"% | قرا "+p.seen.toLocaleString("ar")+" سطر | مقبول "+p.kept.toLocaleString("ar"),ctl);
+ $("#ds").hidden=true;e.target.value="";dstats()};
+$("#ds").onclick=()=>ctl.stop=1;
+$("#dg").onclick=async()=>{const p=$("#dq").value.trim();if(!p&&!dl.value)return;$("#do").textContent="...";const r=await DICT.search(p||"*",dl.value);$("#do").textContent=r.length?r.join("، "):"ما لكيت شي"};
+$("#dk").onclick=async()=>{const w=$("#dq").value.trim();if(!w)return;const r=await DICT.mean(w);$("#do").textContent=(await DICT.has(w))?"✅ «"+w+"» موجودة بالقاموس"+(r?"\n📖 "+r.k+": "+r.d+"\n(المصدر: "+r.s+")":"\n(بدون معنى محفوظ)"):(r?"✅ «"+w+"» مفهومة\n📖 "+r.k+": "+r.d:"❌ «"+w+"» مو موجودة بقاموسك")};
+$("#dx").onclick=async()=>{if(confirm("تمسح الكلمات المستوردة؟ (الكلمات الجاهزة تنرجع تلقائياً)")){await DICT.clear();dstats()}};
+const dictCmd=async t=>{let m=t.match(/^\s*قاموس\s+(\S+)\s*$/);if(m)return{t:(await DICT.has(m[1]))?"✅ «"+m[1]+"» كلمة موجودة بالقاموس":"❌ «"+m[1]+"» مو موجودة بقاموسك (استورد قاموس اكبر من قائمة 📖)",o:"skill"};
+ m=t.match(/^\s*كلمات\s+(\S+)\s*$/);if(m){const r=await DICT.search(m[1],0,40);return{t:r.length?r.join("، "):"ما لكيت كلمات بهذا النمط",o:"skill"}}
+ const x=await understandQ(t);if(x)return x;return null};
+/* فهم الاسئلة: معنى / شنو هي / وين تقع / الفرق بين... يفهم الكلمة اول (من الذاكرة، واذا مو موجودة يدور عليها ويتعلمها) */
+const NOT=new Set("الساعة الوقت التاريخ اليوم اسمك اسمي عمري انت انا اني نفسك الوضع الطقس الجو".split(" "));
+let LASTT="";
+const srcUrl=(s,t)=>s==="ويكيبيديا"?"\n🔗 https://ar.wikipedia.org/wiki/"+encodeURIComponent(String(t).replace(/ /g,"_")):s==="ويكاموس"?"\n🔗 https://ar.wiktionary.org/wiki/"+encodeURIComponent(String(t).replace(/ /g,"_")):"";
+const fmtM=r=>"📖 «"+r.w+"» — "+r.k+"\n"+r.d+"\n(المصدر: "+r.s+")"+srcUrl(r.s,r.t||r.w);
+const sent1=(d,n=220)=>{const x=(d.match(/[^.؟!?]+[.؟!?]?/g)||[d])[0].trim();return x.length>n?x.slice(0,n)+"…":x};
+const getM=async w=>{w=DICT.nd(w).replace(/^\s*كلمة\s+/,"").replace(/\s+/g," ").trim();if(!w||w.split(" ").length>4||NOT.has(w))return null;let r=await DICT.mean(w);if(!r&&navigator.onLine&&window.itkOnline!==false){try{r=await LEARN.learnOne(w)}catch(e){r=null}}if(r)LASTT=r.w;return r};
+const understandQ=async t=>{let m;
+ if(LASTT){const f=t.match(/^\s*(وين تقع|وين يقع|وين|شنو هي|شنو هو|منو هي|منو هو|معناها|معناه|شنو يعني|احجي اكثر|اكثر)\s*[؟?]?\s*$/);if(f){if(/^اك|^احجي/.test(f[1]))return await RES.run(LASTT,()=>{});t=(/^وين/.test(f[1])?"وين تقع ":"شنو هي ")+LASTT}}
+ if(m=t.match(/^\s*(?:شنو|ما|ماهو|ما هو|ايش)?\s*(?:هو\s+)?(?:ال)?فرق\s+بين\s+(.+?)\s*[؟?]?\s*$/)){
+  const p=m[1].split(/\s+و(?=\S)|\s+و\s+/).map(x=>x.trim()).filter(Boolean);if(p.length!==2)return null;
+  const [A,B]=await Promise.all([getM(p[0]),getM(p[1])]);
+  if(!A||!B)return{t:"ما كدرت افهم "+(!A&&!B?"«"+p[0]+"» و«"+p[1]+"»":!A?"«"+p[0]+"»":"«"+p[1]+"»")+" (ما لكيت لها معنى). جرب كلمة ثانية او اكتب «ابحث "+p[0]+"»",o:"skill"};
+  return{t:"⚖️ الفرق بين «"+A.w+"» و«"+B.w+"»\n• "+A.w+" ("+A.k+"): "+sent1(A.d)+"\n• "+B.w+" ("+B.k+"): "+sent1(B.d)+"\n"+(A.k===B.k?"الاثنين من نفس النوع: "+A.k+".":"مختلفين بالنوع: "+A.k+" مقابل "+B.k+"."),o:"skill"}}
+ let wh=t.match(/^\s*(?:وين|اين|أين)\s+(?:تقع|يقع|موجودة|موجود)\s+(.+?)\s*[؟?]?\s*$/)||t.match(/^\s*(.+?)\s+(?:وين|اين|أين)\s+(?:تقع|يقع)\s*[؟?]?\s*$/);
+ if(wh){const r=await getM(wh[1]);if(!r)return null;const ss=r.d.match(/[^.؟!?]+[.؟!?]?/g)||[r.d],f=ss.find(z=>/تقع|يقع|توجد|تتواجد|يوجد|تتوضع/.test(z));
+  return{t:"📍 «"+r.w+"» — "+r.k+"\n"+(f?f.trim():"ما لكيت الموقع بالمعنى اللي فهمته. هذا اللي اعرفه:\n"+r.d)+"\n(المصدر: "+r.s+")",o:"skill"}}
+ m=t.match(/^\s*(?:(?:شنو|ما|ماذا|ايش|وش)\s+)?(?:هو\s+|هي\s+)?(?:معنى|معني|تعريف|يعني)\s+(?:كلمة\s+)?(.+?)\s*[؟?]?\s*$/)||t.match(/^\s*(?:شنو هي|شنو هو|شنهي|شنهو|ما هي|ما هو|ماهي|ماهو|من هي|من هو|منو هي|منو هو|عرفني على|احجي عن|حجي عن|معلومات عن)\s+(?:كلمة\s+)?(.+?)\s*[؟?]?\s*$/);
+ if(m){const r=await getM(m[1]);if(r)return{t:fmtM(r),o:"skill"}}
+ return null};
+/* وضع التعليم: كلمات عربية حقيقية من ويكاموس وويكيبيديا، بسرعة محسوبة وبفلتر جودة */
+const LEARN=(()=>{
+const WK="https://ar.wiktionary.org/w/api.php",WP="https://ar.wikipedia.org/w/api.php";
+const RND="?action=query&generator=random&grnnamespace=0&grnlimit=20&prop=extracts&exintro=1&explaintext=1&exlimit=20&maxlag=5&format=json&origin=*";
+let on=false,rate=10,fdelay=700,cur=LS("wkc",""),done=LS("wkd",false),base=0,mbase=0,wl=null;
+const st={add:0,seen:0,req:0,err:0,rej:0,nom:0,dup:0,src:"",hist:[],use:""},Q=[],known=new Set(),cand=new Map(),feed=[];
+const sl=ms=>new Promise(r=>setTimeout(r,ms));
+/* فلتر الجودة: يرفض اشكال مستحيلة بالعربي (تكرار 3 حروف، ة/ى بالنص، همزة بالبداية، حرف واحد) */
+const good=x=>x.length>1&&!/(.)\1\1/.test(x)&&!/[ةى]./.test(x)&&!/^ء|ءء/.test(x);
+const words=txt=>{const o=new Set();String(txt).split(/[^\u0600-\u06FF\u0750-\u077F]+/).forEach(x=>{x=DICT.nd(x);if(x&&x.length<=10&&DICT.ok(x))o.add(x)});return[...o]};
+const J=async u=>{const c=new AbortController(),id=setTimeout(()=>c.abort(),9000);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)return null;const d=await r.json();return d&&!d.error?d:null}catch(e){return null}finally{clearTimeout(id)}};
+const exs=d=>d&&d.query&&d.query.pages?Object.values(d.query.pages).map(p=>(p.title||"")+" "+(p.extract||"")).join(" "):null;
+const SRC=[
+ async()=>{if(done){st.src="ويكاموس: خلصت كل المداخل ✅";return""}st.src="ويكاموس: كل المداخل";
+  const d=await J(WK+"?action=query&list=allpages&aplimit=500&apfilterredir=nonredirects&maxlag=5&format=json&origin=*"+(cur?"&apcontinue="+encodeURIComponent(cur):""));
+  if(!d||!d.query)return null;const nx=d.continue&&d.continue.apcontinue;if(nx){cur=nx;SV("wkc",cur)}else{done=true;SV("wkd",true)}return d.query.allpages.map(p=>p.title).join(" ")},
+ async()=>{st.src="ويكيبيديا: مقالات عشوائية";return exs(await J(WP+RND))},
+ async()=>{st.src="ويكاموس: تعريفات عشوائية";return exs(await J(WK+RND))}];
+const show=()=>{const now=Date.now();st.hist=st.hist.filter(h=>now-h[0]<10000);const sp=st.hist.reduce((a,h)=>a+h[1],0)/10;
+ $("#lst").textContent="الحالة: "+(on?"🟢 شغال":"⚪ واقف")+"\nالمصدر: "+st.src+"\nفهمها وحفظها بهالجلسة: "+st.add.toLocaleString("ar")+"\nالسرعة: "+sp.toFixed(1)+" / "+rate+" كلمة بالثانية\nكلمات مفهومة (بمعنى محفوظ): "+(mbase+st.add).toLocaleString("ar")+"\nالمجموع بالقاموس: "+(base+st.add).toLocaleString("ar")+"\nبالانتظار للفهم: "+Q.length.toLocaleString("ar")+"\nمرفوضة (ما لكى لها معنى): "+st.nom.toLocaleString("ar")+"\nمرفوضة (جودة): "+st.rej.toLocaleString("ar")+"\nاخطاء الشبكة: "+st.err+" من "+st.req+" ("+(st.req?Math.round(st.err/st.req*100):0)+"%)"+(st.use?"\nالتخزين: "+st.use:"");
+ $("#lfd").textContent=feed.join("  ·  ")};
+const mb=async()=>{try{const e=await navigator.storage.estimate();st.use=(e.usage/1048576).toFixed(1)+" ميغا"}catch(e){}};
+/* جالب الكلمات: يعبي الطابور، ويوقف اذا كبر، ويرجع بتأخير متزايد عند الخطأ */
+const fetcher=async()=>{let i=0,bo=1000;while(on){
+ if(!navigator.onLine||window.itkOnline===false){st.src="ما اكو انترنت... انتظار";await sl(3000);continue}
+ if(Q.length>3000){await sl(400);continue}
+ const k=(rate>=20?[0,0,1,0,2]:[0,1,2])[i++%(rate>=20?5:3)];
+ const txt=await SRC[k]();st.req++;
+ if(txt==null){st.err++;await sl(bo);bo=Math.min(bo*2,30000);continue}
+ bo=1000;const raw=words(txt);st.seen+=raw.length;
+ for(const w of raw){if(known.has(w))continue;if(!good(w)){st.rej++;continue}
+  if(k!==0){const c=(cand.get(w)||0)+1;if(c<2){cand.set(w,c);continue}cand.delete(w)}
+  known.add(w);Q.push(w)}
+ if(known.size>600000)known.clear();if(cand.size>300000)cand.clear();
+ await sl(fdelay)}};
+/* الفهم: يدور على معنى كل كلمة (ويكيبيديا اولاً، وبعدها ويكاموس) قبل الحفظ */
+const clean=x=>String(x||"").replace(/=+[^=\n]+=+/g," ").replace(/\([^)]*[A-Za-z0-9][^)]*\)/g,"").replace(/\s+/g," ").trim();
+const sents=(x,n)=>((x.match(/[^.؟!?]+[.؟!?]?/g))||[x]).slice(0,n).join(" ").trim();
+const KD=[[/دولة|جمهورية|مملكة|إمارة|امارة|سلطنة/,"دولة"],[/عاصمة/,"عاصمة"],[/مدينة|بلدة|قرية|محافظة|ولاية|مقاطعة|إقليم|اقليم|منطقة|حي |ناحية|قضاء/,"مكان"],[/نهر|بحيرة|بحر|محيط|جبل|جزيرة|صحراء|خليج|وادي|مضيق/,"معلم جغرافي"],[/ولد|وُلد|مولود|سياسي|لاعب|ممثل|مغني|كاتب|شاعر|عالم|مطرب|مخترع|رياضي|مغنية|ممثلة|كاتبة|شاعرة/,"شخص"],[/فصيلة|حيوان|طائر|ثدي|سمك|حشرة|زواحف|رتبة/,"كائن حي"],[/نبات|شجر|زهر|ثمر|فاكه|خضار/,"نبات"],[/مرض|متلازمة|اضطراب|عدوى/,"مرض"],[/شركة|مؤسسة|منظمة|حزب|جامعة|نادي|فريق|مجموعة/,"جهة"],[/فيلم|مسلسل|رواية|كتاب|ألبوم|أغنية/,"عمل فني"],[/فعل/,"فعل"],[/صفة/,"صفة"],[/اسم/,"اسم"]];
+const kind=(sd,ex)=>{for(const t of[sd||"",ex.slice(0,150)])for(const[r,l]of KD)if(r.test(t))return l;return"كلمة/مفهوم"};
+const lookup=async(api,ts)=>{const d=await J(api+"?action=query&redirects=1&prop=extracts|pageprops&ppprop=disambiguation|wikibase-shortdesc&exintro=1&explaintext=1&exlimit=20&exsentences=3&maxlag=5&format=json&origin=*&titles="+ts.map(encodeURIComponent).join("%7C"));
+ if(!d||!d.query)return null;const q=d.query,nm={},rd={},by={};(q.normalized||[]).forEach(n=>nm[n.from]=n.to);(q.redirects||[]).forEach(r=>rd[r.from]=r.to);
+ Object.values(q.pages||{}).forEach(p=>{if(p.missing===undefined&&p.invalid===undefined)by[p.title]=p});
+ const out=new Map();ts.forEach(t=>{let x=nm[t]||t;x=rd[x]||x;if(by[x])out.set(t,by[x])});return out};
+const solo=async w=>{const d=await J(WK+"?action=query&redirects=1&prop=extracts&explaintext=1&exchars=700&maxlag=5&format=json&origin=*&titles="+encodeURIComponent(w));
+ const p=d&&d.query&&d.query.pages?Object.values(d.query.pages)[0]:null;return p&&p.missing===undefined?p:null};
+const understand=async ws=>{st.req+=2;const[wp,wk]=await Promise.all([lookup(WP,ws),lookup(WK,ws)]);if(!wp||!wk){st.err++;return null}
+ const ok=[];let no=0,sx=0;
+ for(const w of ws){const pp=wp.get(w);let pk=wk.get(w),src=null,p=null;
+  if(pp&&!(pp.pageprops&&pp.pageprops.disambiguation)&&clean(pp.extract).length>15){src="ويكيبيديا";p=pp}
+  else{if(pk&&clean(pk.extract).length<6&&sx<5){sx++;st.req++;const z=await solo(w);if(z)pk=z}
+   if(pk&&clean(pk.extract).length>5){src="ويكاموس";p=pk}}
+  if(!p){no++;continue}
+  const ex=clean(p.extract),sd=(p.pageprops&&p.pageprops["wikibase-shortdesc"])||"";
+  ok.push({w,k:kind(sd,ex),d:(sd&&src==="ويكيبيديا"?sd+". ":"")+sents(ex,2).slice(0,420),s:src,t:p.title,u:Date.now()})}
+ return{ok,no}};
+/* الموزّع: ياخذ كلمات من الطابور، يفهمها، وبعدها يحفظها وياها معناها */
+const dripper=async()=>{let n=0,fails=0;while(on){
+ if(!Q.length){await sl(300);if(++n%10===0)show();continue}
+ const t0=Date.now(),b=Q.splice(0,20),fr=[];
+ for(const w of b){if(await DICT.hasMean(w))st.dup++;else fr.push(w)}
+ if(!fr.length)continue;
+ const r=await understand(fr);
+ if(!r){fails++;if(fails<3)Q.unshift(...fr);else fails=0;await sl(1500*fails+500);show();continue}
+ fails=0;st.nom+=r.no;
+ if(r.ok.length){const sv=await DICT.addMeanings(r.ok);st.add+=sv.length;st.hist.push([Date.now(),sv.length]);sv.forEach(o=>feed.unshift(o.w+" ("+o.k+")"));feed.length=Math.min(feed.length,40)}
+ const wait=fr.length/rate*1000-(Date.now()-t0);if(wait>0)await sl(wait);
+ if(++n%10===0)mb();show()}show()};
+const lock=()=>{try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>wl=l).catch(()=>{})}catch(e){}};
+document.addEventListener("visibilitychange",()=>{if(on&&!document.hidden)lock()});
+const setRate=r=>{rate=r;fdelay=r>=20?400:700};
+const learnOne=async w=>{w=DICT.nd(w).replace(/\s+/g," ").trim();if(!w)return null;const r=await understand([w]);if(!r||!r.ok.length)return null;const o=r.ok[0];if(DICT.ok(w)&&w.length<=10)await DICT.addMeanings([o]);else await DICT.putMeaning(o);return o};
+return{learnOne,kind,start:async r=>{if(on)return;setRate(r||10);on=true;lock();base=(await DICT.counts()).reduce((a,b)=>a+b,0)-st.add;mbase=(await DICT.mcount())-st.add;mb();fetcher();dripper()},stop:()=>{on=false;try{wl&&wl.release()}catch(e){}},get on(){return on},show,setRate}
+})();
+/*RES-START*/
+/* وضع التحقيق: بحث ← قاموس ← اقرب كلمات ← اعادة بحث لين يلكاها ← جمع من المصادر ← دمج بسطرين الى 3 */
+const RES=(()=>{
+const WP="https://ar.wikipedia.org/w/api.php",WK="https://ar.wiktionary.org/w/api.php",E=encodeURIComponent;
+const J=async u=>{const c=new AbortController(),id=setTimeout(()=>c.abort(),9000);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)return null;const d=await r.json();return d&&!d.error?d:null}catch(e){return null}finally{clearTimeout(id)}};
+const SW=new Set("في من على الى إلى عن مع هذا هذه التي الذي ذلك هو هي كان كانت يكون بين حتى او أو ثم قد لا ما لم لن كل بعد قبل عند منذ خلال أن إن اي أي التى الذى كما فيها منها عليها اكثر أكثر يعد تعد وهي وهو ايضا أيضا حيث كانوا وقد ولا لكن ذات هناك".split(" "));
+const clean=x=>String(x||"").replace(/\([^)]*[A-Za-z0-9][^)]*\)/g,"").replace(/\[\d+\]/g,"").replace(/=+[^=\n]+=+/g," ").replace(/\s+/g," ").trim();
+const nt=x=>DICT.nd(x).replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه");
+const nk=x=>nt(x).replace(/^ال/,"");
+const sentsOf=x=>(clean(x).match(/[^.؟!?\n]+[.؟!?]?/g)||[]).map(z=>z.trim()).filter(z=>z.length>25);
+const toks=x=>clean(x).split(/[^\u0600-\u06FF]+/).filter(w=>w.length>2&&!SW.has(w)&&!SW.has(nk(w)));
+const jac=(a,b)=>{const A=new Set(toks(a).map(nk)),B=new Set(toks(b).map(nk));let i=0;A.forEach(w=>{if(B.has(w))i++});return i/Math.max(1,Math.min(A.size,B.size))};
+const PG="&prop=extracts|pageprops&ppprop=disambiguation|wikibase-shortdesc&exintro=1&explaintext=1&exsentences=5&redirects=1&format=json&origin=*";
+const pick=d=>d&&d.query&&d.query.pages?Object.values(d.query.pages).filter(p=>p.missing===undefined&&p.invalid===undefined):[];
+const dis=p=>p.pageprops&&p.pageprops.disambiguation!==undefined;
+const wpExact=async q=>{const p=pick(await J(WP+"?action=query&titles="+E(q)+PG))[0];return p&&p.extract&&!dis(p)&&clean(p.extract).length>30?p:null};
+const wpSearch=async q=>pick(await J(WP+"?action=query&generator=search&gsrsearch="+E(q)+"&gsrlimit=5&exlimit=5"+PG)).sort((a,b)=>a.index-b.index);
+const suggest=async q=>{const d=await J(WP+"?action=query&list=search&srsearch="+E(q)+"&srlimit=1&srprop=&srinfo=suggestion&format=json&origin=*");return d&&d.query&&d.query.searchinfo&&d.query.searchinfo.suggestion||null};
+const opens=async q=>{const d=await J(WP+"?action=opensearch&search="+E(q)+"&limit=5&format=json&origin=*");return Array.isArray(d)&&Array.isArray(d[1])?d[1]:[]};
+const more=async t=>pick(await J(WP+"?action=query&generator=search&gsrsearch="+E("morelike:"+t)+"&gsrlimit=8&exlimit=8&exintro=1&explaintext=1&exsentences=2&prop=extracts&format=json&origin=*")).sort((a,b)=>a.index-b.index).filter(p=>p.title!==t&&clean(p.extract).length>25);
+const wkx=async q=>{const p=pick(await J(WK+"?action=query&titles="+E(q)+"&prop=extracts&exintro=1&explaintext=1&exsentences=3&redirects=1&format=json&origin=*"))[0];return p&&clean(p.extract).length>8?p:null};
+const ddg=async q=>{const d=await J("https://api.duckduckgo.com/?q="+E(q)+"&format=json&no_html=1&skip_disambig=1");if(!d)return[];const o=[];if(d.AbstractText)o.push(d.AbstractText);(d.RelatedTopics||[]).slice(0,8).forEach(x=>{if(x&&x.Text)o.push(x.Text)});return o};
+const find=async q=>{let p=await wpExact(q);if(p)return p;const nq=nk(q);return(await wpSearch(q)).find(x=>!dis(x)&&x.extract&&(nt(x.title).includes(nq)||nt(x.extract).includes(nq)))||null};
+const variants=q=>{const n=DICT.nd(q),o=new Set([n,n.replace(/^ال/,"")]);if(!/^ال/.test(n))o.add("ال"+n);if(/^[اأإآ]/.test(n))["ا","أ","إ","آ"].forEach(a=>o.add(a+n.slice(1)));if(/[هة]$/.test(n))o.add(n.slice(0,-1)+(n.slice(-1)==="ه"?"ة":"ه"));if(/[يى]$/.test(n))o.add(n.slice(0,-1)+(n.slice(-1)==="ي"?"ى":"ي"));return[...o]};
+const near=async q=>{const n=DICT.nd(q).replace(/\s+/g,"");if(n.length<3||n.length>10||!DICT.ok(n))return[];const o=new Set();for(let i=0;i<n.length;i++){(await DICT.search(n.slice(0,i)+"؟"+n.slice(i+1),n.length,6)).forEach(w=>{if(w!==n)o.add(w)})}return[...o].slice(0,10)};
+const freq=(texts,ex)=>{const m=new Map();texts.forEach(x=>toks(x).forEach(w=>{const k=nk(w);if(ex.has(k)||k.length<3)return;const e=m.get(k);if(e)e.c++;else m.set(k,{c:1,w})}));return m};
+const compose=(term,mainText,others,fr)=>{const first=sentsOf(mainText),pool=[];first.slice(1).forEach(x=>pool.push(x));others.forEach(o=>sentsOf(o).forEach(x=>pool.push(x)));
+ const nq=nk(term),sc=x=>{const tk=toks(x);let v=0;tk.forEach(w=>{const f=fr.get(nk(w));if(f)v+=f.c});return v/Math.sqrt(tk.length+1)+(nt(x).includes(nq)?2:0)};
+ const out=[];if(first.length)out.push(first[0]);
+ for(const x of pool.sort((a,b)=>sc(b)-sc(a))){if(out.length>=3)break;if(out.some(o=>jac(o,x)>.45))continue;out.push(x)}
+ return out.map(x=>x.length>230?x.slice(0,230).replace(/\s\S*$/,"")+"…":x)};
+const keep=async o=>{try{if(DICT.ok(o.w)&&o.w.length<=10)await DICT.addMeanings([o]);else await DICT.putMeaning(o)}catch(e){}};
+const rec=(w,ex,src,sd)=>{const c=clean(ex);return{w:DICT.nd(w).replace(/\s+/g," ").trim(),k:LEARN.kind(sd||"",c),d:(c.match(/[^.؟!?]+[.؟!?]?/g)||[c]).slice(0,2).join(" ").trim().slice(0,420),s:src,t:w,u:Date.now()}};
+let LAST=null;
+const run=async(term,say)=>{say=say||(()=>{});LAST=null;const L=[],P=m=>{L.push(m);say(L.join("\n"))};
+ term=DICT.nd(term).replace(/[؟?!.،,]+/g," ").replace(/\s+/g," ").trim();if(!term)return null;
+ let tries=1,page=null,usedQ=term;
+ P("1️⃣ ابحث عن «"+term+"»...");page=await find(term);
+ P(page?"   ✅ لكيت: "+page.title:"   ❌ ما لكيت بالمحاولة الاولى");
+ P("2️⃣ اشوفها بالقاموس...");const inD=await DICT.has(term),old=await DICT.mean(term);
+ P("   "+(inD?"✅ موجودة بالقاموس":"⚠️ مو موجودة بالقاموس")+(old?" (ومعناها محفوظ)":""));
+ P("3️⃣ ادور على اقرب الكلمات...");let cand=[];
+ if(!page){const sg=await suggest(term);if(sg)cand.push(sg);cand.push(...variants(term));cand.push(...await opens(term));cand.push(...await near(term))}
+ P(page?"   (لكيت الصفحة، راح اجيب المرتبطة بيها)":"   "+(cand.length?[...new Set(cand)].slice(0,6).join("، "):"ما لكيت كلمات قريبة"));
+ if(!page&&cand.length){P("4️⃣ ابحث وابحث لين الكيها...");const seen=new Set([term]);for(const q of cand){if(seen.has(q))continue;seen.add(q);if(tries>=12)break;tries++;P("   🔁 محاولة "+tries+": «"+q+"»");page=await find(q);if(page){usedQ=q;P("   ✅ لكيتها: "+page.title);break}}}
+ P("5️⃣ اجمع من المصادر (ويكيبيديا، ويكاموس، مواقع الويب)...");
+ const[rel,wk,dd]=await Promise.all([page?more(page.title):[],wkx(usedQ),ddg(usedQ)]);
+ let mainText=page?page.extract:(wk?wk.extract:(old?old.d:""));
+ if(!mainText&&dd.length)mainText=dd[0];
+ if(!mainText)return{t:"🧭 دورت على «"+term+"» بـ"+tries+" محاولات (ويكيبيديا، ويكاموس، الويب) وما لكيت عنها شي. تأكد من الاملاء او جرب كلمة ثانية.",o:"skill"};
+ const others=[];if(wk&&page)others.push(wk.extract);dd.forEach(x=>others.push(x));rel.forEach(p=>others.push(p.extract));if(old&&page)others.push(old.d);
+ const ex=new Set(toks(term+" "+(page?page.title:"")).map(nk)),fr=freq([mainText,...others],ex);
+ const top=[...fr.values()].sort((a,b)=>b.c-a.c).slice(0,5).map(x=>x.w);
+ const lines=compose(usedQ,mainText,others,fr),rt=rel.slice(0,5).map(p=>p.title);
+ /* القاموس الصغير: يحفظ الكلمة والمرتبطة بيها وياها معانيها */
+ let saved=0;const msrc=page?"ويكيبيديا":(wk?"ويكاموس":"ويب");
+ const sd=page&&page.pageprops&&page.pageprops["wikibase-shortdesc"]||"";
+ const mainRec=rec(term,mainText,msrc,sd);if(!old||!old.d){await keep(mainRec);saved++}
+ if(page&&DICT.nd(page.title)!==DICT.nd(term)&&!(await DICT.mean(page.title))){await keep(rec(page.title,mainText,msrc,sd));saved++}
+ for(const p of rel.slice(0,5)){if(!(await DICT.mean(p.title))){await keep(rec(p.title,p.extract,"ويكيبيديا"));saved++}}
+ LAST={rel:rt,kind:mainRec.k,title:usedQ};LASTT=usedQ;
+ return{t:"🧭 «"+term+"»"+(usedQ!==term?" (قصدك: "+usedQ+")":"")+"\n"+lines.map(x=>"• "+x).join("\n")+(rt.length?"\n\n🔗 قريبة منها: "+rt.join("، "):"")+(top.length?"\n📊 الاكثر ورودا بالمصادر: "+top.join("، "):"")+(page?"\n🔗 https://ar.wikipedia.org/wiki/"+encodeURIComponent(page.title.replace(/ /g,"_")):""),o:"skill"}};
+const want=(t,r)=>{let m=t.match(/^\s*(?:ادرس|حلل|حقق|تعمق|تحقق)\s+(?:في\s+|عن\s+)?(.+?)\s*[؟?]?\s*$/);if(m)return m[1];
+ if(r&&(r.o==="none"||r.o==="lang-gen")&&/[\u0600-\u06FF]/.test(t)&&!/^\s*(ابحث|دور|فتش)/.test(t)){const w=t.replace(/[؟?!.,،]/g," ").trim().split(/\s+/);if(w.length<=3&&w.join("").length>=2)return w.join(" ")}return null};
+return{run,want,tk:toks,nk,get last(){return LAST}}
+})();
+/*RES-END*/
+const lgo=$("#lgo");
+lgo.onclick=async()=>{if(LEARN.on){LEARN.stop();lgo.textContent="▶ ابدأ التعليم"}else{lgo.textContent="⏹ ايقاف التعليم";await LEARN.start(+$("#lsp").value)}};
+$("#lsp").onchange=e=>LEARN.setRate(+e.target.value);LEARN.show();
+
+/* اختصار ذكي: السطر القصير يبقى مثل ما هو، والطويل (اكثر من 260 حرف) يختصر لاهم جمل بالترتيب */
+const cutAt=(x,max)=>{if(x.length<=max)return x;const c=x.slice(0,max),i=Math.max(c.lastIndexOf("،"),c.lastIndexOf(", "),c.lastIndexOf(" و"));return(i>max*.5?c.slice(0,i):c.slice(0,c.lastIndexOf(" ")))+"…"};
+const shrinkLine=(L,max)=>{const ss=(L.match(/[^.؟!?۔]+[.؟!?۔]?\s*/g)||[L]).map(x=>x.trim()).filter(Boolean);
+ if(ss.length<2)return cutAt(L,max);
+ const f=new Map();ss.forEach(x=>RES.tk(x).forEach(w=>{w=RES.nk(w);f.set(w,(f.get(w)||0)+1)}));
+ const sc=ss.map((x,i)=>{const t=RES.tk(x);let v=0;t.forEach(w=>v+=f.get(RES.nk(w))||0);return{i,x,v:v/Math.sqrt(t.length+1)+(i===0?100:0)-i*.3}});
+ const ch=[];let len=0;for(const o of sc.sort((a,b)=>b.v-a.v)){const l=Math.min(o.x.length,max);if(ch.length&&len+l+1>max)continue;ch.push(o);len+=l+1;if(ch.length>=3)break}
+ return ch.sort((a,b)=>a.i-b.i).map(o=>cutAt(o.x,max)).join(" ")};
+const SHR=(txt,max=260)=>String(txt).split("\n").map(L=>L.length<=max?L:shrinkLine(L,max)).join("\n");
+/* الوضع التلقائي: يبقى يشتغل لوحده، يختار مواضيع، يبحث ويفهم ويحفظ، ويعيد المحاولة اذا فشل */
+const AUTO=(()=>{let on=false,todo=[],seen=new Set(),failed=new Map(),cur="",n=0,okc=0,bad=0,hist=[],t0=0,wl=null,tm=null;
+const sl=ms=>new Promise(r=>setTimeout(r,ms));
+const J=async u=>{const c=new AbortController(),id=setTimeout(()=>c.abort(),9000);try{const r=await fetch(u,{signal:c.signal});if(!r.ok)return null;return await r.json()}catch(e){return null}finally{clearTimeout(id)}};
+const LET="ابتثجحخدذرزسشصضطظعغفقكلمنهوي";
+const rndWiki=async()=>{const d=await J("https://ar.wikipedia.org/w/api.php?action=query&list=random&rnnamespace=0&rnlimit=10&format=json&origin=*");return d&&d.query&&d.query.random?d.query.random.map(x=>x.title):[]};
+const rndDict=async()=>{for(let k=0;k<4;k++){const ws=await DICT.search(LET[Math.floor(Math.random()*LET.length)]+"*",0,80);const c=[];for(const w of ws){if(w.length>2&&!(await DICT.hasMean(w)))c.push(w);if(c.length>=15)break}if(c.length)return c[Math.floor(Math.random()*c.length)]}return null};
+const next=async()=>{const m=n%3;if(m===0&&todo.length)return todo.shift();if(m===1){const w=await rndDict();if(w)return w}
+ if(todo.length&&m!==2)return todo.shift();const r=await rndWiki();return r.length?r[Math.floor(Math.random()*r.length)]:(todo.shift()||null)};
+const draw=()=>{const e=Math.floor((Date.now()-t0)/1000),h=Math.floor(e/3600),m=Math.floor(e%3600/60);
+ $("#ast").textContent="الحالة: "+(on?"🟢 يشتغل لوحده":"⚪ واقف")+"\nالموضوع الحالي: "+(cur||"-")+"\nمواضيع مدروسة: "+n+" (نجح "+okc+" / فشل "+bad+")\nبالطابور: "+todo.length+(on?"\nمدة التشغيل: "+h+" س "+m+" د":"");
+ $("#alog").textContent=hist.join("  ·  ")};
+const loop=async()=>{while(on){
+ if(!navigator.onLine||window.itkOnline===false){cur="ما اكو نت... انتظار";draw();await sl(3000);continue}
+ let tp=null;try{tp=await next()}catch(e){}
+ if(!tp){await sl(2500);continue}
+ cur=tp;draw();let r=null;try{r=await RES.run(tp,()=>{})}catch(e){}
+ n++;const rl=RES.last;
+ if(r&&r.t&&!/^🧭 دورت/.test(r.t)){okc++;if(rl&&rl.rel)rl.rel.forEach(x=>{if(todo.length<200&&!seen.has(x)){seen.add(x);todo.push(x)}});hist.unshift("✓ "+tp+(rl&&rl.kind?" ("+rl.kind+")":""))}
+ else{bad++;hist.unshift("✗ "+tp);const c=(failed.get(tp)||0)+1;failed.set(tp,c);if(c<2)todo.push(tp)}
+ if(seen.size>5000)seen.clear();hist.length=Math.min(hist.length,30);draw();await sl(3500)}draw()};
+const lock=()=>{try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>wl=l).catch(()=>{})}catch(e){}};
+document.addEventListener("visibilitychange",()=>{if(on&&!document.hidden)lock()});
+const btn=()=>{$("#ago").textContent=on?"⏹ ايقاف التلقائي":"▶ شغّل التلقائي"};
+const start=()=>{if(on)return;on=true;SV("auto",true);t0=Date.now();lock();btn();if(!LEARN.on){LEARN.start(4);$("#lgo").textContent="⏹ ايقاف التعليم"}loop();tm=setInterval(draw,1000)};
+const stop=()=>{on=false;SV("auto",false);clearInterval(tm);try{wl&&wl.release()}catch(e){}if(LEARN.on){LEARN.stop();$("#lgo").textContent="▶ ابدأ التعليم"}btn();draw()};
+return{start,stop,get on(){return on},draw,btn}})();
+$("#ago").onclick=()=>AUTO.on?AUTO.stop():AUTO.start();AUTO.btn();AUTO.draw();
+if(LS("auto",false))setTimeout(()=>AUTO.start(),1500);
+
+/* نسخة احتياطية للقاموس + سجل اخطاء + وضع نهاري + تخزين دائم + PWA */
+$("#bd").onclick=async()=>{const d=await DICT.dump(),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"application/json"}));a.download="itaitek-dict-"+new Date().toISOString().slice(0,10)+".json";a.click();$("#bm").textContent="تصدير "+d.w.length+" كلمة و"+d.m.length+" معنى ✅"};
+$("#bi").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const d=JSON.parse(await f.text());await DICT.load(d);$("#bm").textContent="استرجعت "+(d.w||[]).length+" كلمة و"+(d.m||[]).length+" معنى ✅";dstats()}catch(x){$("#bm").textContent="الملف مو صالح ❌"}};
+const logE=m=>{const l=LS("errs",[]);l.unshift(new Date().toISOString().slice(0,16)+" "+String(m).slice(0,160));SV("errs",l.slice(0,30))};
+addEventListener("error",e=>logE(e.message));addEventListener("unhandledrejection",e=>logE(e.reason&&e.reason.message||e.reason));
+$("#aer").onclick=()=>{$("#aet").textContent=LS("errs",[]).join("\n")||"ما اكو اخطاء ✅"};
+const theme=l=>{const r=document.documentElement.style;if(l){r.setProperty("--bg","#f4f8fa");r.setProperty("--pn","#dfeaf0");r.setProperty("--tx","#10222b");r.setProperty("--mu","#506b76");document.body.style.backgroundImage="none"}else{["--bg","--pn","--tx","--mu"].forEach(k=>r.removeProperty(k));document.body.style.backgroundImage=""}};
+theme(LS("light",false));$("#alt").onclick=()=>{const l=!LS("light",false);SV("light",l);theme(l)};
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
+show("chat");BRAIN.on(draw);
+</script>
+
+<script>
+(()=>{
+"use strict";
+const $q=s=>document.querySelector(s);
+const get=(k,d)=>{try{return JSON.parse(localStorage.getItem("itk_plus_"+k))??d}catch(e){return d}};
+const put=(k,v)=>{try{localStorage.setItem("itk_plus_"+k,JSON.stringify(v));return true}catch(e){alert("مساحة التخزين ممتلئة؛ صدّر نسخة احتياطية واحذف ملفات قديمة.");return false}};
+const download=(name,data,type="text/plain;charset=utf-8")=>{const u=URL.createObjectURL(new Blob([data],{type})),a=document.createElement("a");a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)};
+const copy=async t=>{try{await navigator.clipboard.writeText(String(t));alert("تم النسخ ✅")}catch(e){prompt("انسخ النص:",String(t))}};
+const ask=(title,def="")=>prompt(title,def);
+const hist=()=>BRAIN.history(10000);
+const chatText=()=>hist().map(x=>(x.r==="u"?"أنت: ":"iTaiTek: ")+x.x).join("\n\n");
+const last=(role)=>{const a=hist().filter(x=>!role||x.r===role);return a.length?a[a.length-1]:null};
+const searchPage=(base,q)=>{if(!navigator.onLine||window.itkOnline===false){alert("ماكو إنترنت. هذا البحث يحتاج اتصال.");return}window.open(base+encodeURIComponent(q),"_blank","noopener")};
+const askSend=(promptText)=>{if(typeof send==="function")send(promptText)};
+const notes=()=>get("notes",[]),tasks=()=>get("tasks",[]);
+const noteAdd=()=>{const t=ask("اكتب الملاحظة اللي تريد تحفظها:");if(t&&t.trim()){const a=notes();a.unshift({t:t.trim(),at:new Date().toISOString()});put("notes",a);alert("انحفظت الملاحظة على الجهاز ✅")}};
+const notesShow=()=>{const a=notes();alert(a.length?a.map((x,i)=>(i+1)+". "+x.t).join("\n\n"):"ما عندك ملاحظات محفوظة")};
+const taskAdd=()=>{const t=ask("شنو المهمة الجديدة؟");if(t&&t.trim()){const a=tasks();a.push({t:t.trim(),done:false});put("tasks",a);alert("انضافت المهمة ✅")}};
+const taskShow=()=>{const a=tasks();if(!a.length){alert("قائمة المهام فارغة");return}const txt=a.map((x,i)=>(i+1)+". "+(x.done?"[✓] ":"[ ] ")+x.t).join("\n");const n=ask(txt+"\n\nاكتب رقم المهمة حتى تبدّل حالتها، أو اتركه فارغ:");if(n&&/^\d+$/.test(n)&&a[+n-1]){a[+n-1].done=!a[+n-1].done;put("tasks",a);taskShow()}};
+const pins=()=>get("pins",[]);
+const savePin=()=>{const x=last("a");if(!x){alert("ماكو جواب بعد");return}const a=pins();a.unshift({t:x.x,at:new Date().toISOString()});put("pins",a);alert("ثبتّينا آخر جواب ⭐")};
+const safeCalc=expr=>{
+ const s=String(expr).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/×/g,"*").replace(/÷/g,"/").replace(/,/g,".").replace(/\s+/g,"");
+ if(!/^[0-9.+\-*/()%]+$/.test(s))throw Error("اكتب أرقام وعمليات فقط");
+ const toks=s.match(/\d+(?:\.\d+)?|[()+\-*/%]/g)||[];let i=0;
+ const atom=()=>{let t=toks[i++];if(t==="+")return atom();if(t==="-")return -atom();if(t==="("){let v=exprP();if(toks[i++]!==")")throw Error("قوس ناقص");return v}if(t===undefined||!/^\d/.test(t))throw Error("صيغة غير صحيحة");return Number(t)};
+ const term=()=>{let v=atom();while(["*","/","%"].includes(toks[i])){let op=toks[i++],b=atom();v=op==="*"?v*b:op==="/"?v/b:v%b}return v};
+ const exprP=()=>{let v=term();while(["+","-"].includes(toks[i])){let op=toks[i++],b=term();v=op==="+"?v+b:v-b}return v};
+ const v=exprP();if(i!==toks.length||!Number.isFinite(v))throw Error("تعذر حساب التعبير");return v;
+};
+const tools=[
+["العقل والذاكرة",[
+["إحصائيات الذاكرة","عرض حجم الذاكرة وعدد المحادثات",()=>alert(BRAIN.stats())],
+["سياق المحادثة الحالي","عرض آخر الرسائل اللي يتذكرها",()=>alert(hist().slice(-8).map(x=>(x.r==="u"?"أنت: ":"هو: ")+x.x).join("\n\n")||"ماكو محادثات")],
+["تنظيف وتصحيح النص","توحيد بعض أشكال الحروف والمسافات",()=>{const t=ask("الصق النص:");if(t)alert(t.toLowerCase().replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه").replace(/[ً-ٰٟـ]/g,"").replace(/\s+/g," ").trim())}],
+["طلب تحليل خطوة بخطوة","يرسل السؤال بصيغة تطلب شرحاً منظماً",()=>{const t=ask("شنو السؤال أو المشكلة؟");if(t)askSend("حلل هذا الطلب بخطوات واضحة، واذكر الافتراضات والنتيجة: "+t)}],
+["توضيح السؤال الغامض","يساعدك تصيغ السؤال بشكل أدق",()=>{const t=ask("اكتب السؤال الغامض:");if(t)askSend("ساعدني أحدد المقصود من هذا السؤال، واذكر الاحتمالات واسألني عن المعلومة الناقصة: "+t)}],
+["تعليم جواب وتصحيح","حفظ سؤال وجواب جديد بالذاكرة",()=>{const q=ask("السؤال:");if(!q)return;const a=ask("الجواب الصحيح:");if(a){BRAIN.teach(q,a);alert("تعلم الجواب وانحفظ ✅")}}],
+["تعليم من نص","فتح صفحة تعليم النصوص والملفات",()=>show("teach")],
+["كلمات مرتبطة","البحث عن كلمات مشابهة بالقاموس المحلي",async()=>{const q=ask("اكتب نمط البحث، مثال: ب*ر");if(q){const a=await DICT.search(q,0,30);alert(a.join("، ")||"ما لكيت نتائج")}}],
+["تحقيق ومقارنة المعلومات","تشغيل محرك التحقيق عند توفر الإنترنت",()=>{const q=ask("شنو الموضوع اللي تريد تحقق منه؟");if(q){if(!navigator.onLine||window.itkOnline===false)alert("التحقيق الخارجي يحتاج إنترنت؛ تگدر تبحث بالمعلومات المحفوظة حالياً.");else askSend("حقق عن "+q)}}],
+["تخصيص أسلوب الرد","اختيار أسلوب تستخدمه بالطلب القادم",()=>{const p=ask("اختار أسلوب الرد: عراقي / مختصر / مفصل / رسمي / تعليمي","عراقي");if(p)put("persona",p.trim());alert("الأسلوب المحفوظ: "+(get("persona","عراقي")) )}]
+]],
+["الإنترنت والمصادر",[
+["ويكيبيديا العربية","فتح بحث ويكيبيديا العربية",()=>searchPage("https://ar.wikipedia.org/w/index.php?search=",ask("ابحث عن شنو؟")||"")],
+["ويكيبيديا الإنجليزية","فتح بحث ويكيبيديا الإنجليزية",()=>searchPage("https://en.wikipedia.org/w/index.php?search=",ask("Search for:")||"")],
+["بحث Google","فتح بحث Google",()=>searchPage("https://www.google.com/search?q=",ask("شنو تبحث؟")||"")],
+["بحث Bing","فتح بحث Bing",()=>searchPage("https://www.bing.com/search?q=",ask("شنو تبحث؟")||"")],
+["بحث DuckDuckGo","فتح بحث خصوصي",()=>searchPage("https://duckduckgo.com/?q=",ask("شنو تبحث؟")||"")],
+["بحث Reddit","البحث بتجارب المجتمع",()=>searchPage("https://www.reddit.com/search/?q=",ask("شنو تبحث؟")||"")],
+["بحث GitHub","البحث عن مشاريع وأكواد",()=>searchPage("https://github.com/search?q=",ask("اسم المشروع أو الكود:")||"")],
+["بحث Stack Overflow","البحث عن حلول برمجية",()=>searchPage("https://stackoverflow.com/search?q=",ask("اكتب مشكلة البرمجة:")||"")],
+["بحث YouTube","فتح بحث الفيديوهات",()=>searchPage("https://www.youtube.com/results?search_query=",ask("شنو الفيديو؟")||"")],
+["مصادر التطبيق","إدارة مصادر البحث الموجودة أصلاً",()=>show("src")]
+]],
+["الأوفلاين والملفات",[
+["القاموس المحلي","البحث داخل قاموس الجهاز",()=>show("dict")],
+["المعرفة المحلية","اسأل الدماغ من ذاكرته بدون بحث خارجي",()=>{const q=ask("اكتب سؤالاً محلياً:");if(q)askSend("جاوبني من الذاكرة المحلية فقط وبدون بحث خارجي: "+q)}],
+["معرفة البرمجة المحفوظة","السؤال عن كودات تعلمها سابقاً",()=>{const q=ask("شنو موضوع البرمجة؟");if(q)askSend("من معلوماتك المحفوظة فقط، اشرح: "+q)}],
+["معرفة الألعاب المحفوظة","السؤال عن معلومات الألعاب المحفوظة",()=>{const q=ask("اسم اللعبة والسؤال:");if(q)askSend("جاوب من المعلومات المحفوظة فقط عن اللعبة: "+q)}],
+["محادثة محلية","التأكد من استخدام الذاكرة دون مواقع",()=>{const q=ask("اكتب رسالتك:");if(q)askSend("بدون بحث إنترنت، جاوب من ذاكرتك المحلية فقط: "+q)}],
+["استيراد ملف نصي","تحميل نص حتى يتعلم منه الدماغ",()=>show("teach")],
+["نموذج ذكاء محلي","فحص متطلبات النموذج المحلي",()=>alert("محرك توليدي محلي غير مضمّن حالياً. يحتاج ملف نموذج متوافق مع Android/WebAssembly أو تطبيق تشغيل محلي، وقد يحتاج عدة غيغابايت من التخزين والذاكرة. الذاكرة الحالية وحدها ليست نموذج LLM.")],
+["إعدادات النموذج المحلي","مكان إعداد محرك النموذج عند توفيره",()=>alert("ماكو نموذج محلي مثبت حتى نعرض إعداداته. لا تدخل مفتاح API هنا؛ نحتاج أولاً اختيار محرك ونموذج متوافقين مع جهازك.")],
+["الملفات المحفوظة","عرض الملاحظات والملفات النصية اللي حفظتها",notesShow],
+["مزامنة ونسخ احتياطي","تصدير نسخة كاملة أو استعادة نسخة سابقة",()=>{const a=ask("1 تصدير نسخة كاملة | 2 استعادة نسخة كاملة","1");if(a==="1")backup();else if(a==="2")restoreBackup()}]
+]],
+["البرمجة وصناعة المشاريع",[
+["محرر HTML","إنشاء صفحة HTML ومعاينتها",()=>editor("html")],
+["مساعد Python","شرح أو توليد كود Python",()=>{const q=ask("شنو تريد تسوي بـ Python؟");if(q)askSend("اكتب كود Python مناسب واشرح تشغيله على Android: "+q)}],
+["محرر JavaScript","كتابة كود JavaScript وحفظه",()=>editor("js")],
+["مصحح الأكواد","إرسال كود لتحليل الأخطاء",()=>{const q=ask("الصق الكود اللي بيه خطأ:");if(q)askSend("حلل هذا الكود وحدد الأخطاء ثم اعطني نسخة مصححة مع الحفاظ على وظيفته:\n"+q)}],
+["مولّد الأكواد","إنشاء كود من وصفك",()=>{const q=ask("اوصف البرنامج اللي تريده:");if(q)askSend("أنشئ كوداً كاملاً لهذا الطلب واشرح طريقة تشغيله: "+q)}],
+["حفظ نسخ الكود","حفظ نسخة من الكود الحالي",()=>{const q=ask("الصق الكود:");if(q){const a=get("codeVersions",[]);a.unshift({code:q,date:new Date().toISOString()});put("codeVersions",a);alert("انحفظت نسخة الكود")}}],
+["شرح سطر بسطر","طلب شرح تفصيلي للكود",()=>{const q=ask("الصق الكود:");if(q)askSend("اشرح هذا الكود سطراً بسطر وبالعراقي، ولا تحذف أي سطر:\n"+q)}],
+["تنزيل مشروع HTML","حفظ كود HTML كملف",()=>{const q=ask("الصق كود HTML:");if(q)download("itaitek-project.html",q,"text/html;charset=utf-8")}],
+["اختبار JavaScript","تشغيل تجربة بسيطة داخل صندوق معزول",()=>{const q=ask("اكتب تعبير JavaScript بسيط (مثال: 2+2):");if(q){const frame=document.createElement("iframe");frame.sandbox="allow-scripts";frame.style="display:none";document.body.append(frame);frame.srcdoc="<script>try{parent.postMessage({itkTest:String("+q+")},'*')}catch(e){parent.postMessage({itkErr:String(e)},'*')}<\\/script>";const fn=e=>{if(e.data&&e.data.itkTest!==undefined){alert("الناتج: "+e.data.itkTest);window.removeEventListener("message",fn);frame.remove()}if(e.data&&e.data.itkErr){alert("خطأ: "+e.data.itkErr);window.removeEventListener("message",fn);frame.remove()}};window.addEventListener("message",fn);setTimeout(()=>frame.remove(),3000)}}],
+["مكتبة المقاطع البرمجية","عرض الأكواد المحفوظة",()=>{const a=get("snippets",[]);const q=ask("المقاطع المحفوظة:\n"+a.map((x,i)=>(i+1)+". "+x.name).join("\n")+"\n\nاكتب اسم مقطع جديد للحفظ:");if(q){const code=ask("الصق الكود:");if(code){a.unshift({name:q,code});put("snippets",a);alert("انحفظ المقطع")}}}]
+]],
+["الصوت والتفاعل",[
+["محادثة صوتية","تشغيل الإدخال الصوتي وقراءة الرد",()=>{say=true;SV("say",true);alert("قراءة الإجابات بالصوت مفعّلة. استخدم زر 🎤 للإدخال الصوتي.")}],
+["إدخال صوتي","تشغيل زر المايكروفون الموجود",()=>$("#mic").click()],
+["قراءة آخر جواب","نطق آخر إجابة",()=>{const x=last("a");if(!x){alert("ماكو جواب بعد");return}if(!window.speechSynthesis){alert("المتصفح ما يدعم قراءة الصوت");return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(x.x);u.lang="ar-IQ";speechSynthesis.speak(u)}],
+["اختيار الصوت","اختيار صوت من الأصوات المتاحة",()=>{const vs=speechSynthesis.getVoices();if(!vs.length){alert("ماكو أصوات محمّلة حالياً؛ جرّب بعد شوي");return}const list=vs.map((v,i)=>i+" - "+v.name+" ("+v.lang+")");const n=ask(list.join("\n")+"\nاكتب رقم الصوت:","0");if(n!==null&&vs[+n])put("voice",vs[+n].name)}],
+["تحليل الصور","فحص متطلبات تحليل الصور",()=>alert("رفع الصورة وحده ما يخلي المتصفح يفهمها. تحليل الصور الحقيقي يحتاج نموذج رؤية محلي أو خدمة Vision متصلة. هذه الميزة تحتاج ربط محرك قبل تفعيلها.")],
+["واجهة المحادثة","الرجوع إلى المحادثة الرئيسية",()=>show("chat")],
+["تخصيص الشخصية","اختيار طريقة مخاطبة مفضلة",()=>{const p=ask("اكتب وصف الشخصية (مثلاً: مدرس صبور، مساعد برمجة، مختصر):",get("persona","مساعد عراقي"));if(p!==null){put("persona",p);alert("تم حفظ تفضيل الشخصية. اذكره برسالتك حتى يطبقه العقل الحالي.")}}],
+["إيقاف الصوت","إيقاف قراءة الكلام فوراً",()=>{if(window.speechSynthesis)speechSynthesis.cancel();alert("تم إيقاف الصوت") }],
+["ملفات شخصية متعددة","إنشاء أو تبديل ملف ذاكرة",()=>{const n=ask("اسم الملف الشخصي الجديد أو الموجود:",BRAIN.profile());if(n&&n.trim())BRAIN.use(n.trim()).then(()=>{draw();alert("تم تبديل الملف إلى "+n)})}],
+["تصدير المحادثة","حفظ سجل المحادثة كنص",()=>download("itaitek-chat.txt",chatText())]
+]],
+["الإدارة والحماية",[
+["مدير الملاحظات والمهام","إضافة وعرض ملاحظاتك ومهامك المحلية",()=>{const a=ask("1 إضافة ملاحظة | 2 عرض الملاحظات | 3 إضافة مهمة | 4 عرض/تحديث المهام","1");if(a==="1")noteAdd();else if(a==="2")notesShow();else if(a==="3")taskAdd();else if(a==="4")taskShow()}],
+["مساعدة PDF","إرشادات إدخال محتوى PDF",()=>alert("حالياً استيراد النصوص TXT مدعوم مباشرة. حتى يتعلم من PDF، انسخ النص منه أو حوّله إلى TXT ثم استورده. قراءة PDF مباشرة تحتاج مكتبة PDF مضافة للمشروع.")],
+["نسخة احتياطية للذاكرة","تنزيل ملف ذاكرة الدماغ",()=>download("itaitek-brain-backup.json",BRAIN.exportAll(),"application/json")],
+["نسخ احتياطي تلقائي","حفظ لقطة دورية لذاكرة الدماغ محلياً",()=>{put("autoBackup",!get("autoBackup",false));alert("النسخ التلقائي المحلي: "+(get("autoBackup",false)?"مفعّل":"متوقف"))}],
+["قفل التطبيق برمز","قفل واجهة محلي عند فتح التطبيق",()=>{const p=ask("ضع رمز قفل محلي (اتركه فارغاً لإلغاء):");if(p===null)return;if(p)put("pin",p);else localStorage.removeItem("itk_plus_pin");alert("تم تحديث القفل. ملاحظة: هذا يمنع فتح الواجهة فقط ولا يشفر ملفات الذاكرة.");location.reload()}],
+["إحصائيات التعلم","عرض عدد الكلمات والمعاني والمحادثات",async()=>{const c=await DICT.counts(),m=await DICT.mcount();alert("محادثات محفوظة: "+hist().length+"\nكلمات القاموس: "+c.reduce((a,b)=>a+b,0)+"\nمعاني محفوظة: "+m+"\nملاحظات: "+notes().length+"\nمهام: "+tasks().length)}],
+["تقييم الإجابة","تقييم آخر جواب حتى يتحسن التعليم",()=>{const x=last("a");if(!x){alert("ماكو جواب");return}const v=ask("قيّم الجواب من 1 إلى 5، واكتب ملاحظتك:","5");if(v) {const a=get("ratings",[]);a.unshift({answer:x.x,rating:v,date:new Date().toISOString()});put("ratings",a);alert("انحفظ التقييم محلياً")}}],
+["الإضافات Plugins","فتح مصادر ومشاريع إضافات خارجية",()=>searchPage("https://github.com/search?q=javascript+plugin+system&type=repositories","")],
+["فحص الأعطال","عرض سجل الأخطاء",()=>{const a=LS("errs",[]);alert(a.join("\n")||"ماكو سجل أخطاء محفوظ") }],
+["تحديث التطبيق","إعادة تحميل التطبيق بعد تحديث الملفات",async()=>{if("serviceWorker" in navigator){const regs=await navigator.serviceWorker.getRegistrations();for(const r of regs)await r.update()}location.reload()}]
+]]
+];
+function backup(){Promise.all([DICT.dump()]).then(([dict])=>{const obj={format:"iTaiTekPlusBackup",version:1,brain:JSON.parse(BRAIN.exportAll()),dict,notes:notes(),tasks:tasks(),pins:pins(),settings:{web:LS("web",true),say:LS("say",false)}};download("itaitek-full-backup.json",JSON.stringify(obj),"application/json")})}
+function restoreBackup(){const f=document.createElement("input");f.type="file";f.accept=".json,application/json";f.onchange=async()=>{const file=f.files&&f.files[0];if(!file)return;try{const o=JSON.parse(await file.text());if(o.format!=="iTaiTekPlusBackup"||!o.brain||!o.dict)throw Error("ملف النسخة غير معروف");if(!confirm("راح تستعيد الذاكرة والقاموس والملاحظات. سوّي نسخة احتياطية حالية قبل الاستعادة. نكمل؟"))return;await BRAIN.importAll(JSON.stringify(o.brain));await DICT.load(o.dict);put("notes",o.notes||[]);put("tasks",o.tasks||[]);put("pins",o.pins||[]);if(o.settings){SV("web",o.settings.web!==false);SV("say",!!o.settings.say)}alert("تمت استعادة النسخة الاحتياطية. راح أعيد تحميل التطبيق.");location.reload()}catch(e){alert("فشلت الاستعادة: "+e.message)}};f.click()}
+function editor(kind){const old=document.getElementById("itkEditor");if(old)old.remove();const wrap=document.createElement("div");wrap.id="itkEditor";wrap.className="itk-modal";wrap.innerHTML='<div class="itk-modalbox"><h3>محرر '+kind.toUpperCase()+'</h3><textarea id="itkCode" spellcheck="false" placeholder="اكتب الكود هنا..."></textarea><div class="itk-actions"><button id="itkPreview">معاينة</button><button id="itkSave">تنزيل</button><button id="itkClose">إغلاق</button></div><iframe id="itkFrame" sandbox="allow-scripts"></iframe></div>';
+ document.body.append(wrap);wrap.querySelector("#itkClose").onclick=()=>wrap.remove();wrap.querySelector("#itkSave").onclick=()=>download(kind==="html"?"project.html":"script.js",wrap.querySelector("#itkCode").value,kind==="html"?"text/html":"text/javascript");wrap.querySelector("#itkPreview").onclick=()=>{const code=wrap.querySelector("#itkCode").value;const frame=wrap.querySelector("#itkFrame");frame.srcdoc=kind==="html"?code:'<pre id="out"></pre><script>try{document.getElementById("out").textContent=String((()=>{'+code+'})())}catch(e){document.getElementById("out").textContent=String(e)}<\\/script>'};}
+function render(){const main=document.querySelector("main"),section=document.createElement("section");section.id="v-lab";section.className="v";section.hidden=true;section.innerHTML='<div class="itk-intro"><b>🧠 مختبر iTaiTek — 60 ميزة</b><p>ميزات مدمجة مع العقل الحالي، وأدوات محلية، وروابط بحث. الميزات التي تحتاج نموذجاً أو محركاً إضافياً موضّحة بصراحة.</p><div id="itk-count"></div></div><div id="itk-groups"></div>';
+ main.append(section);VIEWS.push(["lab","🧰 60 ميزة"]);const nav=H("button",0,"🧰 60 ميزة");nav.onclick=()=>show("lab");menu.append(nav);
+ const root=section.querySelector("#itk-groups");let n=0;tools.forEach(([group,items])=>{const card=document.createElement("div");card.className="itk-group";const h=document.createElement("h3");h.textContent=group;card.append(h);const grid=document.createElement("div");grid.className="itk-grid";items.forEach(([name,desc,fn])=>{n++;const item=document.createElement("article");item.className="itk-item";const num=document.createElement("small");num.textContent=String(n).padStart(2,"0");const title=document.createElement("b");title.textContent=name;const p=document.createElement("p");p.textContent=desc;const btn=document.createElement("button");btn.textContent="فتح";btn.onclick=()=>{try{fn()}catch(e){alert("تعذر تنفيذ الميزة: "+e.message)}};item.append(num,title,p,btn);grid.append(item)});card.append(grid);root.append(card)});section.querySelector("#itk-count").textContent="عدد الميزات: "+n+" | الاتصال: "+(navigator.onLine&&window.itkOnline!==false?"ONLINE":"OFFLINE");}
+const style=document.createElement("style");style.textContent=`.itk-intro,.itk-group{background:rgba(0,0,0,.22);border:1px solid rgba(242,184,75,.28);border-radius:16px;padding:13px;margin-bottom:12px}.itk-intro b{color:var(--ac);font-size:19px}.itk-intro p,.itk-item p{color:var(--mu);font-size:13px;line-height:1.5}.itk-group h3{margin:0 0 10px;color:var(--ac)}.itk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px}.itk-item{background:rgba(255,255,255,.07);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;min-width:0}.itk-item small{color:var(--ac)}.itk-item b{font-size:14px}.itk-item p{margin:0;min-height:38px}.itk-item button{padding:6px}.itk-modal{position:fixed;inset:0;background:#000c;z-index:20;display:grid;place-items:center;padding:12px}.itk-modalbox{background:var(--bg);border:1px solid var(--ac);border-radius:16px;padding:12px;width:min(100%,650px);height:min(90%,760px);display:flex;flex-direction:column;gap:9px}.itk-modalbox textarea{flex:1;min-height:150px;font-family:monospace;direction:ltr;text-align:left}.itk-actions{display:flex;gap:7px}.itk-modalbox iframe{width:100%;height:35%;background:white;border:0;border-radius:8px}.itk-modalbox h3{margin:0;color:var(--ac)}body.itk-compact .m div.t{font-size:15px;padding:7px 10px}`;
+document.head.append(style);
+render();
+const savedPin=get("pin","");if(savedPin){const lock=document.createElement("div");lock.style="position:fixed;inset:0;z-index:99999;background:#07151c;display:grid;place-items:center;padding:24px";lock.innerHTML='<div style="width:min(100%,360px);background:#12303d;border:1px solid #f2b84b;border-radius:18px;padding:20px;text-align:center;color:#eef6f8"><h2>🔒 iTaiTek مقفول</h2><p>أدخل رمز القفل المحلي للمتابعة</p><input id="itkUnlock" type="password" inputmode="numeric" style="width:100%;padding:12px;border-radius:10px"><button id="itkUnlockBtn" style="margin-top:12px;background:#f2b84b;color:#222">فتح التطبيق</button><p id="itkUnlockErr"></p></div>';document.body.append(lock);const go=()=>{if(lock.querySelector("#itkUnlock").value===savedPin)lock.remove();else lock.querySelector("#itkUnlockErr").textContent="الرمز غير صحيح"};lock.querySelector("#itkUnlockBtn").onclick=go;lock.querySelector("#itkUnlock").onkeydown=e=>{if(e.key==="Enter")go()}}
+// Store periodic snapshots locally only when enabled. The user can still export a real backup.
+setInterval(()=>{if(get("autoBackup",false)){try{put("autoSnapshot",{time:Date.now(),brain:BRAIN.exportAll()})}catch(e){}}},5*60*1000);
+// Utility functions exposed as buttons through the tools page additions below.
+window.addEventListener("online",()=>{const c=document.querySelector("#itk-count");if(c)c.textContent="عدد الميزات: 60 | الاتصال: "+(window.itkOnline===false?"OFFLINE":"ONLINE")});
+window.addEventListener("offline",()=>{const c=document.querySelector("#itk-count");if(c)c.textContent="عدد الميزات: 60 | الاتصال: OFFLINE"});
+})();
+</script>
+
+<script>
+/* iTaiTek 200-feature expansion — generated as a self-contained module */
+(()=>{'use strict';
+const groups={
+'العقل والتفكير':[
+'تفكيك السؤال إلى أجزاء','خطة حل متعددة الخطوات','تلخيص الإجابة','إعادة صياغة النص','استخراج الكلمات المفتاحية','استخراج الكيانات والأسماء','اكتشاف التناقضات في النص','مقارنة فكرتين','توليد أمثلة تعليمية','إنشاء أسئلة متابعة','شرح مبسط ومتقدم','تحديد الافتراضات','تحليل الإيجابيات والسلبيات','اقتراح حلول بديلة','تحويل الهدف إلى مهام','ترتيب الأولويات','مراجعة منطق النص','كشف الغموض في الطلب','إنشاء خريطة أفكار نصية','تقييم اكتمال الإجابة'],
+'الإنترنت والبحث':[
+'بحث ويكيبيديا','بحث Google','بحث Bing','بحث DuckDuckGo','بحث Reddit','بحث GitHub','بحث Stack Overflow','بحث YouTube','بحث الأوراق العلمية','بحث توثيق لغات البرمجة','فتح رابط خارجي','حفظ رابط للمفضلة','استخراج عنوان الصفحة','مقارنة نتائج بحث','التحقق من تاريخ المصدر','عرض نطاق الموقع','بحث أخبار حديثة','بحث ملفات PDF','بحث مشاريع مفتوحة المصدر','سجل عمليات البحث'],
+'الذاكرة والتعلم':[
+'ملاحظات دائمة محلية','ملاحظات سريعة','بطاقات مراجعة','اختبار سؤال وجواب','تكرار متباعد بسيط','دفتر التعلم','تسجيل تصحيح المستخدم','قائمة المفاهيم المتعلمة','وسوم للملاحظات','بحث داخل الملاحظات','تصدير الذاكرة JSON','استيراد الذاكرة JSON','نسخة احتياطية يدوية','استعادة نسخة احتياطية','سجل التعديلات','مفضلة الإجابات','قائمة أهداف التعلم','متابعة تقدم التعلم','إزالة ملاحظة محددة','مسح بيانات الذاكرة'],
+'العمل دون إنترنت':[
+'تشغيل الواجهة دون إنترنت','الوصول إلى الأدوات المحلية','قاموس محلي قابل للبحث','حفظ الملاحظات محلياً','آلة حاسبة محلية','محرر نصوص محلي','عداد الكلمات المحلي','تنسيق JSON محلي','ترميز Base64 محلي','تشفير/فك ترميز URL','مولد كلمات مرور محلي','حفظ المهام محلياً','مؤقت محلي','ساعة محلية','تحويل وحدات أساسي','فحص حالة الاتصال','تنبيه فقد الاتصال','مزامنة عند عودة الاتصال','تصدير البيانات دون نت','استيراد الملفات دون نت'],
+'البرمجة والتطوير':[
+'محرر HTML','محرر CSS','محرر JavaScript','محرر Python نصي','معاينة HTML معزولة','تنسيق JSON','التحقق من JSON','مقارنة نصين','بحث واستبدال نصي','عد الأسطر والكلمات','مولد قالب HTML','مولد قالب CSS','مولد قالب JavaScript','مولد Regex تجريبي','اختبار Regex','ترميز Base64','فك Base64','ترميز URL','فك URL','ملاحظات المشاريع'],
+'الصور والملفات':[
+'اختيار ملف من الجهاز','قراءة ملف نصي','معاينة JSON','قراءة CSV كنص','نسخ محتوى الملف','تنزيل نص كملف','تنزيل JSON كملف','تصدير تقرير نصي','سحب وإفلات الملفات','عرض اسم الملف وحجمه','تحليل امتداد الملف','تنظيم قائمة الملفات','حفظ قائمة ملفات','ملاحظات لكل ملف','قائمة ملفات حديثة','معاينة SVG نصياً','توليد SVG بسيط','تحويل لون HEX/RGB','توليد لوحة ألوان','مشاركة نص عبر النظام'],
+'الصوت والمحادثة':[
+'واجهة محادثة عربية','حفظ سجل المحادثة','نسخ آخر إجابة','مسح سجل المحادثة','تغيير حجم الخط','وضع قراءة مريح','إعداد اللهجة المفضلة','إعداد طول الإجابة','اختصارات لوحة المفاتيح','إملاء صوتي عند دعم المتصفح','قراءة صوتية عند دعم المتصفح','إيقاف القراءة الصوتية','اختيار صوت النظام','مؤشر حالة الاتصال','رسائل خطأ مفهومة','رسائل تحميل واضحة','تبديل الوضع الليلي','تبديل الوضع النهاري','واجهة RTL عربية','إعدادات إمكانية الوصول'],
+'الأدوات اليومية':[
+'آلة حاسبة','تحويل Celsius/Fahrenheit','تحويل km/mile','تحويل kg/lb','تحويل cm/inch','تحويل MB/GB','حساب النسبة المئوية','حساب الخصم','حساب المتوسط','حساب الفرق بين رقمين','مؤقت تنازلي','ساعة إيقاف','عداد أحرف','عداد كلمات','عداد أسطر','مولد كلمة مرور','مولد رقم عشوائي','منشئ قائمة مهام','ملاحظات سريعة','مخطط يومي نصي'],
+'الألعاب والترفيه':[
+'دفتر أكواد الألعاب','ملاحظات Blox Fruits','ملاحظات Roblox','ملاحظات Minecraft','ملاحظات المحاكيات','قائمة ألعاب مفضلة','تتبع تقدم لعبة','قاعدة معلومات شخصية للألعاب','حفظ إعدادات الألعاب','مقارنة عناصر اللعبة','مولد اسم لاعب','مولد أفكار تحديات','مولد أسئلة مسابقات','لعبة تخمين رقم','لعبة حجر ورقة مقص','اختبار معلومات عامة','مؤقت جلسة اللعب','تذكير استراحة اللعب','سجل إنجازات اللعب','ملاحظات تحديثات الألعاب'],
+'الإدارة والأمان':[
+'لوحة حالة التطبيق','إعدادات عامة','حفظ الإعدادات محلياً','استعادة الإعدادات الافتراضية','تصدير الإعدادات','استيراد الإعدادات','قفل محلي اختياري','تغيير رمز القفل','إخفاء معاينة المحتوى','مسح سجل البحث','مسح الملاحظات','مسح بيانات التطبيق','إظهار مساحة التخزين التقريبية','فحص دعم المتصفح','فحص دعم التخزين المحلي','فحص دعم الصوت','فحص دعم المشاركة','سجل أخطاء محلي','نسخ احتياطي دوري اختياري','معلومات إصدار التطبيق']
+};
+const all=Object.entries(groups).flatMap(([g,items])=>items.map(name=>({g,name})));
+const ready=new Set(['آلة حاسبة','تحويل Celsius/Fahrenheit','تحويل km/mile','تحويل kg/lb','تحويل cm/inch','تحويل MB/GB','حساب النسبة المئوية','حساب الخصم','حساب المتوسط','حساب الفرق بين رقمين','عداد أحرف','عداد كلمات','عداد أسطر','مولد كلمة مرور','مولد رقم عشوائي','منشئ قائمة مهام','ملاحظات سريعة','تنسيق JSON','التحقق من JSON','مقارنة نصين','بحث واستبدال نصي','ترميز Base64','فك Base64','ترميز URL','فك URL','قراءة ملف نصي','تنزيل نص كملف','تنزيل JSON كملف','نسخ آخر إجابة','تبديل الوضع الليلي','تبديل الوضع النهاري','واجهة RTL عربية','بحث Google','بحث Bing','بحث DuckDuckGo','بحث Reddit','بحث GitHub','بحث Stack Overflow','بحث YouTube','بحث ويكيبيديا','فتح رابط خارجي','حفظ رابط للمفضلة','ملاحظات دائمة محلية','ملاحظات سريعة','تصدير الذاكرة JSON','استيراد الذاكرة JSON','نسخة احتياطية يدوية','استعادة نسخة احتياطية','مؤقت تنازلي','ساعة إيقاف','ملاحظات Blox Fruits','ملاحظات Roblox','ملاحظات Minecraft','دفتر أكواد الألعاب','مؤشر حالة الاتصال','تغيير حجم الخط','مسح سجل المحادثة','حفظ سجل المحادثة','حفظ الإعدادات محلياً','تصدير الإعدادات','استيراد الإعدادات','لوحة حالة التطبيق','قراءة ملف نصي','اختيار ملف من الجهاز','محرر HTML','محرر CSS','محرر JavaScript','معاينة HTML معزولة','توليد قالب HTML','توليد قالب CSS','توليد قالب JavaScript','عداد الكلمات المحلي','الوصول إلى الأدوات المحلية','تشغيل الواجهة دون إنترنت']);
+const store=(k,v)=>{try{localStorage.setItem('itk200_'+k,JSON.stringify(v))}catch(e){}};
+const load=(k,d)=>{try{const v=localStorage.getItem('itk200_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}};
+const el=(tag,attrs={},txt='')=>{const x=document.createElement(tag);Object.entries(attrs).forEach(([k,v])=>x.setAttribute(k,v));if(txt)x.textContent=txt;return x};
+const css=`#itk200-launch{display:none!important}#itk200{position:fixed;inset:0;z-index:99991;background:#081820;color:#eef6f8;display:none;direction:rtl;font:15px system-ui;overflow:auto;padding:12px}#itk200 .wrap{max-width:900px;margin:auto}#itk200 h2,#itk200 h3{color:#f2b84b}#itk200 .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}#itk200 button,#itk200 input,#itk200 textarea,#itk200 select{font:inherit;border-radius:10px;padding:9px;border:1px solid #42616c;background:#12303d;color:#eef6f8}#itk200 button{cursor:pointer}#itk200 .gold{background:#f2b84b;color:#17232a;font-weight:800}#itk200 .card{background:#102b36;border:1px solid #2a4b57;border-radius:14px;padding:12px;margin:10px 0}#itk200 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}#itk200 .item{border:1px solid #2a4b57;border-radius:10px;padding:9px;background:#0c222c}#itk200 .muted{color:#a8c0c8;font-size:12px}#itk200 textarea{width:100%;min-height:90px;box-sizing:border-box}#itk200 input{max-width:100%}#itk200 .tools button{margin:3px}#itk200 .hide{display:none!important}`;
+const style=el('style');style.textContent=css;document.head.append(style);
+const launch=null; // لوحة +200 داخلية فقط: لا يوجد زر أو واجهة للمستخدم
+const root=el('div',{id:'itk200'});root.innerHTML=`<div class="wrap"><div class="bar"><h2>🧠 مركز iTaiTek — التوسعة 200</h2><button id="i2close">✕ إغلاق</button></div><p class="muted">هذه 200 إضافة جديدة إلى مختبر الـ60 الموجود في مشروعك. الحالة موضحة بصدق: الأدوات المحلية جاهزة، والوظائف التي تحتاج خدمة أو نموذجاً معلّمة بذلك.</p><div class="card"><div class="bar"><b id="i2status">الاتصال...</b><b>200 إضافة • 10 أقسام</b></div><div id="i2stats" class="muted"></div></div><div class="card"><h3>🧰 الأدوات المحلية الجاهزة</h3><div class="tools" id="i2tools"></div><div id="i2toolbox"></div></div><div class="card"><h3>⚙️ إعدادات iTaiTek</h3><div class="grid"><label>حجم الخط <input id="i2font" type="range" min="13" max="22" value="15"></label><label>طول الإجابة <select id="i2length"><option>مختصر</option><option selected>متوسط</option><option>مفصل</option></select></label><label>اللهجة <select id="i2dialect"><option>عراقي</option><option>عربي فصيح</option><option>حسب السؤال</option></select></label><label><input id="i2backup" type="checkbox"> نسخة إعدادات تلقائية محلية</label><label><input id="i2compact" type="checkbox"> واجهة مضغوطة</label><label><input id="i2sound" type="checkbox"> السماح بالقراءة الصوتية</label></div><p class="muted">هذه تفضيلات واجهة محفوظة محلياً؛ لا تغيّر محرك الذكاء الأساسي أو تضيف نموذجاً لغوياً بحد ذاتها.</p><button id="i2export" class="gold">تصدير إعدادات</button><input id="i2import" type="file" accept="application/json"><button id="i2reset">إرجاع الافتراضي</button></div><div class="card"><h3>🌐 البحث بالمواقع</h3><p class="muted">يفتح بحثاً مباشراً بالموقع المحدد. هذا ليس API ولا يعني أن النتائج تُقرأ تلقائياً داخل عقل iTaiTek.</p><input id="i2query" placeholder="اكتب موضوع البحث" style="width:100%"><div class="tools" id="i2search"></div></div><div class="card"><h3>📚 قائمة الإضافات الـ200</h3><input id="i2filter" placeholder="ابحث باسم الميزة أو القسم" style="width:100%"><div id="i2list"></div></div><div class="card"><h3>⚠️ وظائف تحتاج مكونات إضافية</h3><p>النموذج المحلي التوليدي، تحليل الصور الحقيقي، محرك Python، المزامنة السحابية، وواجهات API تحتاج ملفات نموذج/محرك أو خادماً ومفاتيح خدمة. لم أضع مفاتيح وهمية ولم أدّعِ أنها تعمل تلقائياً.</p></div></div>`;
+document.body.append(root);
+const $=id=>root.querySelector('#'+id);const close=()=>root.style.display='none';root.style.display='none';$('i2close').onclick=close;
+function status(){const online=navigator.onLine;$('i2status').textContent=online?'🟢 متصل بالشبكة — البحث الخارجي متاح':'🟠 دون اتصال — الأدوات والبيانات المحلية فقط';$('i2stats').textContent=`${all.length} / 200 ميزة مدرجة • ${ready.size} ميزة محلية أو روابط بحث متاحة • ${200-ready.size} تحتاج خدمة/دمج إضافي أو لم تُفعّل بعد`}
+window.addEventListener('online',status);window.addEventListener('offline',status);status();
+const tools=['آلة حاسبة','تحويل وحدات','النسبة والخصم','عداد النص','JSON','مقارنة نصين','Base64','URL','مولد كلمة مرور','ملاحظات','مهام','مؤقت'];
+const toolNames={'آلة حاسبة':'calc','تحويل وحدات':'units','النسبة والخصم':'percent','عداد النص':'count','JSON':'json','مقارنة نصين':'diff','Base64':'b64','URL':'url','مولد كلمة مرور':'pass','ملاحظات':'notes','مهام':'tasks','مؤقت':'timer'};
+for(const n of tools){const b=el('button',{},n);b.onclick=()=>tool(toolNames[n]);$('i2tools').append(b)}
+function tool(type){const box=$('i2toolbox');box.innerHTML='';let html='';
+if(type==='calc')html='<h3>آلة حاسبة</h3><input id="tval" placeholder="مثال: (25+5)*3" style="width:100%"><button id="trun">احسب</button><pre id="tout"></pre>';
+if(type==='units')html='<h3>تحويل وحدات</h3><input id="tval" type="number" placeholder="القيمة"><select id="tunit"><option value="c">C إلى F</option><option value="f">F إلى C</option><option value="km">km إلى mile</option><option value="mile">mile إلى km</option><option value="kg">kg إلى lb</option><option value="lb">lb إلى kg</option><option value="cm">cm إلى inch</option><option value="inch">inch إلى cm</option><option value="mb">MB إلى GB</option><option value="gb">GB إلى MB</option></select><button id="trun">حوّل</button><pre id="tout"></pre>';
+if(type==='percent')html='<h3>النسبة والخصم</h3><input id="tval" type="number" placeholder="السعر/العدد"><input id="tval2" type="number" placeholder="النسبة %"><button id="trun">احسب</button><pre id="tout"></pre>';
+if(type==='count')html='<h3>عداد النص</h3><textarea id="tval" placeholder="الصق النص هنا"></textarea><pre id="tout"></pre>';
+if(type==='json')html='<h3>منسق JSON</h3><textarea id="tval" placeholder="الصق JSON"></textarea><button id="trun">تحقق وتنسيق</button><pre id="tout"></pre>';
+if(type==='diff')html='<h3>مقارنة نصين</h3><textarea id="tval" placeholder="النص الأول"></textarea><textarea id="tval2" placeholder="النص الثاني"></textarea><button id="trun">قارن</button><pre id="tout"></pre>';
+if(type==='b64')html='<h3>Base64</h3><textarea id="tval" placeholder="النص"></textarea><select id="tmode"><option value="e">ترميز</option><option value="d">فك الترميز</option></select><button id="trun">تنفيذ</button><pre id="tout"></pre>';
+if(type==='url')html='<h3>URL Encode / Decode</h3><textarea id="tval"></textarea><select id="tmode"><option value="e">ترميز</option><option value="d">فك الترميز</option></select><button id="trun">تنفيذ</button><pre id="tout"></pre>';
+if(type==='pass')html='<h3>مولد كلمة مرور</h3><input id="tval" type="number" min="8" max="128" value="20"><button id="trun">ولّد</button><pre id="tout"></pre>';
+if(type==='notes')html='<h3>ملاحظات محلية</h3><textarea id="tval" placeholder="ملاحظاتك تُحفظ على هذا الجهاز"></textarea><button id="trun">حفظ</button><pre id="tout"></pre>';
+if(type==='tasks')html='<h3>قائمة مهام</h3><input id="tval" placeholder="مهمة جديدة"><button id="trun">أضف</button><div id="tout"></div>';
+if(type==='timer')html='<h3>مؤقت بالثواني</h3><input id="tval" type="number" value="60"><button id="trun">ابدأ</button><pre id="tout"></pre>';
+box.innerHTML=html;const run=box.querySelector('#trun'),v=()=>box.querySelector('#tval')?.value||'',v2=()=>box.querySelector('#tval2')?.value||'',out=()=>box.querySelector('#tout');if(type==='count'){const update=()=>out().textContent=`أحرف: ${v().length}\nكلمات: ${v().trim()?v().trim().split(/\s+/).length:0}\nأسطر: ${v()?v().split(/\r?\n/).length:0}`;box.querySelector('#tval').oninput=update;update()}
+if(run)run.onclick=()=>{try{let r='';if(type==='calc'){const s=v().trim();if(!/^[0-9+*/().%\s-]+$/.test(s))throw Error('استخدم أرقاماً وعوامل حسابية فقط');r=Function('"use strict";return ('+s+')')()}
+if(type==='units'){const n=Number(v()),u=box.querySelector('#tunit').value;const f={c:x=>x*9/5+32,f:x=>(x-32)*5/9,km:x=>x*.621371,mile:x=>x/ .621371,kg:x=>x*2.20462,lb:x=>x/2.20462,cm:x=>x/2.54,inch:x=>x*2.54,mb:x=>x/1024,gb:x=>x*1024};r=f[u](n)}
+if(type==='percent'){const a=Number(v()),p=Number(v2());r=`النسبة: ${a*p/100}\nبعد الخصم: ${a-a*p/100}`}
+if(type==='json')r=JSON.stringify(JSON.parse(v()),null,2);
+if(type==='diff')r=v()===v2()?'النصان متطابقان':'النصان مختلفان';
+if(type==='b64')r=box.querySelector('#tmode').value==='e'?btoa(unescape(encodeURIComponent(v()))):decodeURIComponent(escape(atob(v())));
+if(type==='url')r=box.querySelector('#tmode').value==='e'?encodeURIComponent(v()):decodeURIComponent(v());
+if(type==='pass'){const n=Math.max(8,Math.min(128,Number(v())||20)),a='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*_-';const b=new Uint32Array(n);crypto.getRandomValues(b);r=Array.from(b,x=>a[x%a.length]).join('')}
+if(type==='notes'){store('notes',v());r='انحفظت الملاحظة على هذا الجهاز.'}
+if(type==='tasks'){const a=load('tasks',[]);a.push(v());store('tasks',a);r=a.map((x,i)=>`${i+1}. ${x}`).join('\n');}
+if(type==='timer'){let n=Math.max(1,Number(v())||1);out().textContent='باقي '+n+' ثانية';const id=setInterval(()=>{n--;out().textContent='باقي '+n+' ثانية';if(n<=0){clearInterval(id);out().textContent='⏰ انتهى الوقت'}} ,1000);return}
+out().textContent=String(r); }catch(e){out().textContent='خطأ: '+e.message}};
+if(type==='notes')box.querySelector('#tval').value=load('notes','');if(type==='tasks')out().textContent=load('tasks',[]).map((x,i)=>`${i+1}. ${x}`).join('\n');}
+const sites=[['Google','https://www.google.com/search?q='],['Bing','https://www.bing.com/search?q='],['DuckDuckGo','https://duckduckgo.com/?q='],['Wikipedia','https://ar.wikipedia.org/w/index.php?search='],['Reddit','https://www.reddit.com/search/?q='],['GitHub','https://github.com/search?q='],['Stack Overflow','https://stackoverflow.com/search?q='],['YouTube','https://www.youtube.com/results?search_query='],['Google Scholar','https://scholar.google.com/scholar?q=']];for(const [n,u] of sites){const b=el('button',{},n);b.onclick=()=>{const q=$('i2query').value.trim();if(!q)return;if(!navigator.onLine){alert('ماكو اتصال بالإنترنت');return}window.open(u+encodeURIComponent(q),'_blank','noopener')};$('i2search').append(b)}
+function renderList(){const q=$('i2filter').value.trim().toLowerCase();const host=$('i2list');host.innerHTML='';for(const [g,items] of Object.entries(groups)){const filtered=items.filter(n=>!q||(n+' '+g).toLowerCase().includes(q));if(!filtered.length)continue;const sec=el('section',{class:'card'});sec.append(el('h3',{},g));const grid=el('div',{class:'grid'});for(const n of filtered){const item=el('div',{class:'item'});item.append(el('b',{},n),el('div',{class:'muted'},ready.has(n)?'🟢 جاهزة محلياً / رابط بحث':'🧩 تحتاج API أو نموذج أو دمج إضافي'));grid.append(item)}sec.append(grid);host.append(sec)}}$('i2filter').oninput=renderList;renderList();
+const defaults={font:15,length:'متوسط',dialect:'عراقي',backup:false,compact:false,sound:false};function apply(s){$('i2font').value=s.font;$('i2length').value=s.length;$('i2dialect').value=s.dialect;$('i2backup').checked=s.backup;$('i2compact').checked=s.compact;$('i2sound').checked=s.sound;root.style.fontSize=s.font+'px';document.body.classList.toggle('itk-compact',s.compact);store('settings',s)}
+let settings={...defaults,...load('settings',{})};apply(settings);for(const id of ['font','length','dialect','backup','compact','sound'])$(('i2'+id)).onchange=()=>{settings={font:Number($('i2font').value),length:$('i2length').value,dialect:$('i2dialect').value,backup:$('i2backup').checked,compact:$('i2compact').checked,sound:$('i2sound').checked};apply(settings)};
+$('i2export').onclick=()=>download(JSON.stringify({settings,notes:load('notes',''),tasks:load('tasks',[])},null,2),'itaitek-settings.json','application/json');$('i2import').onchange=async e=>{try{const d=JSON.parse(await e.target.files[0].text());apply({...defaults,...d.settings});if('notes'in d)store('notes',d.notes);if('tasks'in d)store('tasks',d.tasks);alert('تم استيراد الإعدادات والبيانات المحلية')}catch(x){alert('ملف غير صالح')}e.target.value=''};$('i2reset').onclick=()=>apply(defaults);
+function download(s,name,type){const a=el('a');a.href=URL.createObjectURL(new Blob([s],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+// Quick launch from the existing chat: do not modify the original brain logic.
+window.ITAItekExpansion={features:all.length,groups,close, list:()=>all.map(x=>({group:x.g,name:x.name,ready:ready.has(x.name)})), execute:(name,value='')=>{const map={'آلة حاسبة':'calc','تحويل وحدات':'units','النسبة والخصم':'percent','عداد النص':'count','JSON':'json','مقارنة نصين':'diff','Base64':'b64','URL':'url','مولد كلمة مرور':'pass','ملاحظات':'notes','مهام':'tasks','مؤقت':'timer'};const t=map[name]||name;tool(t);const box=$('i2toolbox');const inp=box.querySelector('#tval');if(inp&&value!==undefined)inp.value=String(value);const run=box.querySelector('#trun');if(run)run.click();return box.innerText||'الأداة جاهزة؛ بعض الوظائف تتطلب إدخالاً إضافياً.';}};
+})();
+
+</script>
+</body>
+</html>
